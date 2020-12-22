@@ -2,8 +2,8 @@ import { PageContainer } from '@ant-design/pro-layout';
 import React, { useState, useEffect } from 'react';
 import { Spin } from 'antd';
 import styles from './index.less';
-import Link from 'umi/link';
-import logoPic from '../assets/logo.jpg';
+import { Link } from 'umi';
+import logoPic from '../../../src/assets/logo.jpg';
 export default () => {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -16,7 +16,7 @@ export default () => {
         <header className={styles.top}>
           <img className={styles.logo} src={logoPic} />
           <Link to="/home">首页</Link>
-          <Link to="/home">登录</Link>
+          <Link to="/user/login">登录</Link>
         </header>
 
         {/* <Spin spinning={loading} size="large" /> */}
