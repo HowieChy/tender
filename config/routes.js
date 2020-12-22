@@ -15,6 +15,11 @@ export default [
         ],
       },
       {
+        icon: 'smile',
+        path: '/home',
+        component: './Home',
+      },
+      {
         path: '/',
         component: '../layouts/SecurityLayout',
         routes: [
@@ -55,6 +60,7 @@ export default [
                 path: '/list',
                 component: './ListTableList',
               },
+
               {
                 component: './404',
               },
