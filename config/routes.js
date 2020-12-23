@@ -7,7 +7,6 @@ export default [
         path: '/',
         redirect: '/user/home',
       },
-
       {
         path: '/user',
         component: '../layouts/UserLayout',
@@ -35,37 +34,49 @@ export default [
             routes: [
               {
                 path: '/',
-                redirect: '/welcome',
+                redirect: '/bid/bidrecord',
               },
+              // {
+              //   path: '/welcome',
+              //   name: 'welcome',
+              //   icon: 'smile',
+              //   component: './Welcome',
+              // },
+              // {
+              //   path: '/admin',
+              //   name: 'admin',
+              //   icon: 'crown',
+              //   component: './Admin',
+              //   authority: ['admin'],
+              //   routes: [
+              //     {
+              //       path: '/admin/sub-page',
+              //       name: 'sub-page',
+              //       icon: 'smile',
+              //       component: './Welcome',
+              //       authority: ['admin'],
+              //     },
+              //   ],
+              // },
+              // {
+              //   name: 'list.table-list',
+              //   icon: 'table',
+              //   path: '/list',
+              //   component: './ListTableList',
+              // },
               {
-                path: '/welcome',
-                name: 'welcome',
+                name: '招投标',
                 icon: 'smile',
-                component: './Welcome',
-              },
-              {
-                path: '/admin',
-                name: 'admin',
-                icon: 'crown',
-                component: './Admin',
-                authority: ['admin'],
+                path: '/bid',
                 routes: [
                   {
-                    path: '/admin/sub-page',
-                    name: 'sub-page',
-                    icon: 'smile',
-                    component: './Welcome',
-                    authority: ['admin'],
+                    name: '投标记录',
+                    path: '/bid/bidrecord',
+                    component: './BidRecord',
+                    // authority: ['admin'],
                   },
                 ],
               },
-              {
-                name: 'list.table-list',
-                icon: 'table',
-                path: '/list',
-                component: './ListTableList',
-              },
-
               {
                 component: './404',
               },

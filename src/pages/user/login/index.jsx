@@ -30,7 +30,7 @@ const Login = (props) => {
   const { status, type: loginType } = userLogin;
   const [type, setType] = useState('account');
   const intl = useIntl();
-
+  const [form] = ProForm.useForm();
   const handleSubmit = (values) => {
     const { dispatch } = props;
     dispatch({
@@ -136,10 +136,7 @@ const Login = (props) => {
                 prefix: <MobileTwoTone className={styles.prefixIcon} />,
               }}
               name="mobile"
-              placeholder={intl.formatMessage({
-                id: 'pages.login.phoneNumber.placeholder',
-                defaultMessage: '手机号',
-              })}
+              placeholder={'手机号'}
               rules={[
                 {
                   required: true,
@@ -152,6 +149,8 @@ const Login = (props) => {
               ]}
             />
             <ProFormCaptcha
+
+              
               fieldProps={{
                 size: 'large',
                 prefix: <MailTwoTone className={styles.prefixIcon} />,
@@ -159,23 +158,21 @@ const Login = (props) => {
               captchaProps={{
                 size: 'large',
               }}
-              placeholder={intl.formatMessage({
-                id: 'pages.login.captcha.placeholder',
-                defaultMessage: '请输入验证码',
-              })}
-              captchaTextRender={(timing, count) => {
-                if (timing) {
-                  return `${count} ${intl.formatMessage({
-                    id: 'pages.getCaptchaSecondText',
-                    defaultMessage: '获取验证码',
-                  })}`;
-                }
+              placeholder={'请输入验证码'}
+              // captchaTextRender={(timing, count) => {
+              //   console.log(timing,count);
 
-                return intl.formatMessage({
-                  id: 'pages.login.phoneLogin.getVerificationCode',
-                  defaultMessage: '获取验证码',
-                });
-              }}
+              // //   if (!form.getFieldValue('mobile')) {
+              // //     message.error('请先输入手机号');
+              // //     return;
+              // //  }
+
+              //   if (timing) {
+              //     return `${count}S获取验证码`;
+              //   }
+
+              //   return '获取验证码';
+              // }}
               name="captcha"
               rules={[
                 {
@@ -184,15 +181,41 @@ const Login = (props) => {
                 },
               ]}
               onGetCaptcha={async (mobile) => {
+                
+                if (!form.getFieldValue('mobile')) {
+                      message.error('请先输入手机号');
+                      console.log(mobile)
+                      return false;
+                }
+                console.log('mobile',mobile)
                 const result = await getFakeCaptcha(mobile);
-
+                console.log(result)
                 if (result === false) {
                   return;
                 }
 
-                message.success('获取验证码成功！验证码为：1234');
+                // message.success('获取验证码成功！验证码为：1234');
               }}
             />
+            <div className={styles.items} >
+              <ProFormText
+                fieldProps={{
+                  size: 'large',
+                  prefix: <MailTwoTone className={styles.prefixIcon} />,
+                }}
+                name="yzm"
+                placeholder={'验证码'}
+                rules={[
+                  {
+                    required: true,
+                    message: '验证码是必填项！',
+                  },
+                ]}
+              />
+              <div>
+                123
+              </div>
+            </div>
           </>
       
         {/* <div

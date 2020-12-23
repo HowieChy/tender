@@ -34,14 +34,14 @@ const Model = {
               redirect = redirect.substr(redirect.indexOf('#') + 1);
             }
           } else {
-            window.location.href = '/welcome';
+            window.location.href = '/bid/bidrecord';
             return;
           }
         }
 
    
 
-        history.replace(redirect || '/welcome');
+        history.replace(redirect || '/bid/bidrecord');
       }
     },
 
