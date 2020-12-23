@@ -30,3 +30,49 @@
     }
   }
 }
+
+.step2{
+  .top{
+    display: flex;
+    align-items:center;
+    margin:20px 0;
+    background-color:rgb(161,199,244);
+    padding:20px;
+    width: 50%;
+    >span{
+      min-width: 60px;
+    }
+    >div{
+      display: flex;
+      align-items:center;
+      margin-left: 30px;
+      >span{
+        min-width: 60px;
+      }
+
+    }
+  }
+  :global{
+    .editable-cell-value-wrap{
+      min-height: 32px;
+    }
+    .editable-cell {
+      position: relative;
+    }
+    
+    .editable-cell-value-wrap {
+      padding: 5px 12px;
+      cursor: pointer;
+    }
+    
+    .editable-row:hover .editable-cell-value-wrap {
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      padding: 4px 11px;
+    }
+    
+    [data-theme='dark'] .editable-row:hover .editable-cell-value-wrap {
+      border: 1px solid #434343;
+    }
+  }
+}

@@ -8,7 +8,6 @@ import moment from 'moment';
 import cascaderOptions, { DivisionUtil } from '@pansy/china-division';
 const { Option } = Select;
 
-
 // console.log('cascaderOptions',cascaderOptions);
 
 import { PlusOutlined } from '@ant-design/icons';
@@ -254,7 +253,7 @@ export default (props) => {
           <div style={{ textAlign: 'right', marginTop: 20 }}>
             <Button style={{ marginRight: 20 }} type="primary" htmlType="submit">
               暂存
-                </Button>
+            </Button>
             <Button onClick={() => history.push('/bid/bidrecord/step2')}>下一步</Button>
           </div>
         </Form>
