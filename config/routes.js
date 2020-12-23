@@ -4,6 +4,11 @@ export default [
     component: '../layouts/BlankLayout',
     routes: [
       {
+        path: '/',
+        redirect: '/user/home',
+      },
+
+      {
         path: '/user',
         component: '../layouts/UserLayout',
         routes: [
@@ -12,12 +17,12 @@ export default [
             path: '/user/login',
             component: './user/login',
           },
+          {
+            path: '/user/home',
+            name: 'home',
+            component: './Home',
+          },
         ],
-      },
-      {
-        icon: 'smile',
-        path: '/home',
-        component: './Home',
       },
       {
         path: '/',

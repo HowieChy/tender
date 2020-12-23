@@ -56,11 +56,12 @@ const Login = (props) => {
           },
         }}
         onFinish={(values) => {
+          console.log('账号验证码',values)
           handleSubmit(values);
           return Promise.resolve();
         }}
       >
-        <Tabs activeKey={type} onChange={setType}>
+        {/* <Tabs activeKey={type} onChange={setType}>
           <Tabs.TabPane
             key="account"
             tab={intl.formatMessage({
@@ -75,8 +76,8 @@ const Login = (props) => {
               defaultMessage: '手机号登录',
             })}
           />
-        </Tabs>
-
+        </Tabs> */}
+{/* 
         {status === 'error' && loginType === 'account' && !submitting && (
           <LoginMessage
             content={intl.formatMessage({
@@ -122,12 +123,12 @@ const Login = (props) => {
               ]}
             />
           </>
-        )}
+        )} */}
 
         {status === 'error' && loginType === 'mobile' && !submitting && (
           <LoginMessage content="验证码错误" />
         )}
-        {type === 'mobile' && (
+  
           <>
             <ProFormText
               fieldProps={{
@@ -193,8 +194,8 @@ const Login = (props) => {
               }}
             />
           </>
-        )}
-        <div
+      
+        {/* <div
           style={{
             marginBottom: 24,
           }}
@@ -209,14 +210,14 @@ const Login = (props) => {
           >
             忘记密码 ?
           </a>
-        </div>
+        </div> */}
       </ProForm>
-      <Space className={styles.other}>
+      {/* <Space className={styles.other}>
         其他登录方式 :
         <AlipayCircleOutlined className={styles.icon} />
         <TaobaoCircleOutlined className={styles.icon} />
         <WeiboCircleOutlined className={styles.icon} />
-      </Space>
+      </Space> */}
     </div>
   );
 };

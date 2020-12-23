@@ -19,6 +19,7 @@ const Model = {
 
       if (response.status === 'ok') {
         const urlParams = new URL(window.location.href);
+
         const params = getPageQuery();
         message.success('🎉 🎉 🎉  登录成功！');
         let { redirect } = params;
@@ -33,12 +34,14 @@ const Model = {
               redirect = redirect.substr(redirect.indexOf('#') + 1);
             }
           } else {
-            window.location.href = '/';
+            window.location.href = '/welcome';
             return;
           }
         }
 
-        history.replace(redirect || '/');
+   
+
+        history.replace(redirect || '/welcome');
       }
     },
 
