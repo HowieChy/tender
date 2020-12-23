@@ -30,13 +30,12 @@ export default [
           {
             path: '/',
             component: '../layouts/BasicLayout',
-            authority: ['admin', 'user'],
+            // authority: ['admin', 'user'],
             routes: [
               {
                 path: '/',
                 redirect: '/bid/bidrecord',
-              },
-              // {
+              }, // {
               //   path: '/welcome',
               //   name: 'welcome',
               //   icon: 'smile',
@@ -72,11 +71,35 @@ export default [
                   {
                     name: '投标记录',
                     path: '/bid/bidrecord',
-                    component: './BidRecord',
-                    // authority: ['admin'],
+                    component: './BidRecord', // authority: ['admin'],
+                  },
+                  {
+                    // name: '步骤',
+                    icon: 'smile',
+                    path: '/bid/bidrecord/step1',
+                    component: './Step',
+                  },
+                  {
+                    // name: '步骤',
+                    icon: 'smile',
+                    path: '/bid/bidrecord/step2',
+                    component: './Step',
+                  },
+                  {
+                    // name: '步骤',
+                    icon: 'smile',
+                    path: '/bid/bidrecord/step3',
+                    component: './Step',
+                  },
+                  {
+                    // name: '步骤',
+                    icon: 'smile',
+                    path: '/bid/bidrecord/step4',
+                    component: './Step',
                   },
                 ],
               },
+  
               {
                 component: './404',
               },

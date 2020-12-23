@@ -1,0 +1,32 @@
+@import '~antd/es/style/themes/default.less';
+
+.main {
+  width: 100%;
+  background: @component-background;
+}
+.card{
+  margin-top:50px;
+  :global{
+    .ant-form-item-label{
+      width: 100px!important;
+      text-align:left
+    }
+    .tag-input{
+      width:80px
+    }
+  }
+  .item{
+    border: 1px solid #ccc;
+    padding:20px 20px 0 20px;
+    position: relative;
+    background-color: rgb(249,249,249);
+    .tip{
+      position: absolute;
+      width: 120px;
+      background: rgb(250,205,145);
+      left: 20px;
+      top: -13px;
+      text-align: center;
+    }
+  }
+}

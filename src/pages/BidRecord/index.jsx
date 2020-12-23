@@ -1,6 +1,7 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useState, useEffect } from 'react';
 import { Spin,Button,Tabs,Radio,Table } from 'antd';
+import { history } from 'umi';
 import styles from './index.less';
 const { TabPane } = Tabs;
 export default () => {
@@ -84,7 +85,7 @@ export default () => {
       <div className={styles.bid}>
         <div className={styles.top}>
           <span>全部招投标信息</span>
-          <Button  type="primary">新建</Button>
+          <Button onClick={()=>history.push('/bid/bidrecord/step1')} type="primary">新建</Button>
         </div>
         <div className={styles.content}>
         <Radio.Group size={'large'} onChange={handleModeChange} value={mode}  style={{marginTop:20}}>
