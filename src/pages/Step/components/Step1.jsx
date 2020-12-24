@@ -254,7 +254,11 @@ export default (props) => {
             <Button style={{ marginRight: 20 }} type="primary" htmlType="submit">
               暂存
             </Button>
-            <Button onClick={() => history.push('/bid/bidrecord/step2')}>下一步</Button>
+            <Button  htmlType="submit" onClick={() => {
+              console.log(form)
+              form.validateFields()
+              history.push('/bid/bidrecord/step2')
+            }}>下一步</Button>
           </div>
         </Form>
       </div>

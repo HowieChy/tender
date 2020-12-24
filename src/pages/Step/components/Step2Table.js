@@ -1,5 +1,10 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
-import { Table, Input, Button, Popconfirm, Form } from 'antd';
+import { Table, Input, Button, Popconfirm, Form ,Switch} from 'antd';
+import {
+  CloseCircleOutlined,
+} from '@ant-design/icons';
+
+
 const EditableContext = React.createContext();
 
 const EditableRow = ({ index, ...props }) => {
@@ -90,6 +95,9 @@ export class EditableTable extends React.Component {
         title: '',
         dataIndex: 'index',
         width: '2%',
+        // render: (text, record) =>
+        //   <div style={{backgroundColor:'#ccc'}} >{record.index}</div>
+       
       },
       {
         title: '投标人',
@@ -112,106 +120,112 @@ export class EditableTable extends React.Component {
       {
         title: '其他得分',
         dataIndex: 'other',
-        width: '5%',
+        width: '3%',
         editable: true,
       },
       {
         title: '备注标签',
         dataIndex: 'remark',
-        width: '8%',
+        width: '10%',
         editable: true,
       },
       {
-        title: 'operation',
+        title: '操作',
         dataIndex: 'operation',
-        width: '5%',
+        width: '3%',
         render: (text, record) =>
           this.state.dataSource.length >= 1 ? (
-            <Popconfirm title="Sure to delete?" onConfirm={() => this.handleDelete(record.key)}>
-              <a>Delete</a>
-            </Popconfirm>
+            <div style={{display: 'flex',alignItems: 'center'}}>
+              <Switch checked ={record.has}  onClick={()=>this.change(record)}/>
+              <Popconfirm title="确定删除吗?" onConfirm={() => this.handleDelete(record.key)}>
+                <CloseCircleOutlined  style={{marginLeft:6,fontSize:'22px',color:"red"}}/>
+              </Popconfirm>
+            </div>
           ) : null,
       },
       {
         title: '球数',
         dataIndex: 'num1',
-        width: '5%',
+        width: '4%',
       },
       {
         title: '中标签位',
         dataIndex: 'num2',
-        width: '5%',
+        width: '4%',
       },
       {
         title: '区间位置',
         dataIndex: 'num3',
-        width: '5%',
+        width: '4%',
       },
       {
         title: '总名次',
         dataIndex: 'num4',
-        width: '5%',
+        width: '4%',
       },
       {
         title: '总得分',
         dataIndex: 'num5',
-        width: '5%',
+        width: '4%',
       },
       {
         title: '报价名次',
         dataIndex: 'num6',
-        width: '5%',
+        width: '4%',
       },
       {
         title: '报价分',
         dataIndex: 'num7',
-        width: '5%',
+        width: '4%',
       },
       {
         title: '偏差值',
         dataIndex: 'num8',
-        width: '5%',
+        width: '4%',
       },
     ];
     this.state = {
-      dataSource: [
-        // {
-        //   key: '0',
-        //   index:1,
-        //   name: 'Edward King 0',
-        //   age: '32',
-        //   address: 'London, Park Lane no. 0',
-        // },
-        // {
-        //   key: '1',
-        //   index:2,
-        //   name: 'Edward King 1',
-        //   age: '32',
-        //   address: 'London, Park Lane no. 1',
-        // },
-      ],
-      count: 0,
+      dataSource: []
+      // count: 0,
     };
   }
-
-  handleDelete = (key) => {
+  change=(val)=>{
+    console.log(val);
     const dataSource = [...this.state.dataSource];
+    dataSource[val.key].has=false;
     this.setState({
-      dataSource: dataSource.filter((item) => item.key !== key),
+      dataSource: dataSource,
+    });
+  }
+  handleDelete = (key) => {
+    console.log(key)
+    const dataSource = [...this.state.dataSource];
+    console.log(dataSource)
+    var arr=dataSource.filter((item) => item.key !== key);
+    console.log(arr)
+    var newArr=[];
+    arr.map((item,index) =>{
+      newArr.push({
+        ...item,
+        key:index,
+        index:index+1,
+      })
+    })
+    console.log('newArr',newArr)
+    this.setState({
+      dataSource: newArr,
     });
   };
   handleAdd = () => {
-    const { count, dataSource } = this.state;
+    const {  dataSource } = this.state;
     const newData = {
-      key: count,
-      index:count+1,
-      // name: `Edward King ${count}`,
-      // age: 32,
-      // address: `London, Park Lane no. ${count}`,
+      key: dataSource.length,
+      index:dataSource.length+1,
+      has:true
     };
     this.setState({
       dataSource: [...dataSource, newData],
-      count: count + 1,
+      // count: count + 1,
     });
   };
   handleSave = (row) => {
@@ -224,6 +238,21 @@ export class EditableTable extends React.Component {
     });
   };
 
+  // shouldComponentUpdate=(nextProps,nextState)=>{
+  //   console.log(nextState,this.state);
+  //   return true;
+  // }
+  componentDidMount=()=>{
+    console.log(1129,this.props.msg)
+    this.setState({
+      dataSource:this.props.msg
+    })
+  }
+  componentDidUpdate=()=>{ 
+    console.log(233333,this.state.dataSource)
+    // console.log(1130,this.props.msg)
+    this.props.data(this.state.dataSource);
+  }
   render() {
     const { dataSource } = this.state;
     const components = {

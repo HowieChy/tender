@@ -1,6 +1,6 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useState, useEffect } from 'react';
-import { Spin ,Button ,Select} from 'antd';
+import React, { useState, useEffect,useCallback,useMemo } from 'react';
+import { Spin ,Button ,Select,} from 'antd';
 import styles from './index.less';
 import {history} from 'umi';
 import {EditableTable} from './Step2Table'
@@ -14,6 +14,9 @@ export default (props) => {
    const [num2Val, setNum2Val] = useState();
    const [num3, setNum3] = useState([]);
    const [num3Val, setNum3Val] = useState();
+
+  const [allData, setallData] = useState([]);
+
   useEffect(() => {
     const {num1,num2,num3}=JSON.parse(localStorage.getItem('step1'));
     console.log(233,num1,num2,num3)
@@ -22,12 +25,27 @@ export default (props) => {
     setNum2(num2)
     setNum2Val(num2[0])
     setNum3(num3)
-    setNum3Val(num3[0])
+    setNum3Val(num3[0]);
+    const step2=localStorage.getItem('step2');
+    if(step2){
+      console.log(123,step2)
+      setallData(JSON.parse(step2))
+    }
   }, []);
 
   const sum=()=>{
+      // console.log(this.child.state)
+      console.log(allData)
+  } 
 
+  const getData=(val)=>{
+    console.log('子组件数据',val)
+    setallData(val)
   }
+
+  // const EditableTable=useMemo(()=>{
+  //   <EditableTable   data={getData}/>
+  // })
   
   return (
     <div className={styles.step2}>
@@ -58,9 +76,13 @@ export default (props) => {
               </Select>
             </div>
           </div>
-          <EditableTable/>
+          {allData.length>0&&  <EditableTable  msg={allData}  data={getData}/>}
+          {allData.length==0&&  <EditableTable  msg={allData}  data={getData}/>}
           <div style={{textAlign: 'right'}}>
-            <Button  style={{ marginRight: 20 }} onClick={()=>history.go(-1)}>上一步</Button>
+            <Button  style={{ marginRight: 20 }} onClick={()=>{
+              localStorage.setItem('step2',JSON.stringify(allData))
+              history.go(-1)
+            }}>上一步</Button>
             <Button  style={{ marginRight: 20 }} onClick={sum}>计算</Button>
             <Button  type='primary' onClick={()=>history.push('/bid/bidrecord')}>归档</Button>
           </div>
