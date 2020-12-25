@@ -4,14 +4,19 @@ import { Spin,Carousel,Button } from 'antd';
 import styles from './index.less';
 import { Link,history } from 'umi';
 
+import { ads} from '@/services/bid';
+
 export default () => {
-  const [loading, setLoading] = useState(true);
+  const [ad, setAd] = useState([]);
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 0);
+    getAds();
   }, []);
 
+  const getAds=async()=>{
+    var result=await ads();
+    console.log('ads',result,result.data.data);
+    setAd(result.data.data);
+  }
   const contentStyle = {
     height: '460px',
     color: '#fff',
@@ -35,15 +40,9 @@ export default () => {
         <Button onClick={go} style={{margin:20}} type="danger" size="large">立即登录使用</Button>
         <div className={styles.ad}>
           <Carousel afterChange={onChange}>
-            <div>
-              <div style={contentStyle}>1</div>
-            </div>
-            <div>
-              <div style={contentStyle}>2</div>
-            </div>
-            <div>
-              <div style={contentStyle}>3</div>
-            </div>
+            {ad.map((item,index)=>
+              <img src={item.image_format} key={index}/>
+            )}
           </Carousel>
         </div>
      

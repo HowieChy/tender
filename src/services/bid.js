@@ -14,6 +14,10 @@ export async function fakeAccountLogin(params) {
   });
 }
 
+//广告轮播
+export async function ads() {
+  return request('/api/v1/ads?key=slides');
+}
 // export async function fakeAccountLogin(params) {
 //   return request(Lib.url_mc+`/Api/Account/User/AccessToken?${stringify(params)}`);
 // }

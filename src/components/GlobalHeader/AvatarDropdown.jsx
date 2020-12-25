@@ -54,11 +54,12 @@ class AvatarDropdown extends React.Component {
         </Menu.Item>
       </Menu>
     );
-    return currentUser && currentUser.name ? (
+    return currentUser && currentUser.data ? (
       <HeaderDropdown overlay={menuHeaderDropdown}>
         <span className={`${styles.action} ${styles.account}`}>
           <Avatar size="small" className={styles.avatar} src={currentUser.avatar} alt="avatar" />
-          <span className={`${styles.name} anticon`}>{currentUser.name}</span>
+          <span className={`${styles.name} anticon`}>{currentUser.data.mobile}</span>
+          {/* <span className={`${styles.name} anticon`}>{JSON.parse(localStorage.getItem('userInfo')).mobile}</span> */}
         </span>
       </HeaderDropdown>
     ) : (

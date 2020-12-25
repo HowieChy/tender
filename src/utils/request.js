@@ -3,7 +3,14 @@
  * 更详细的 api 文档: https://github.com/umijs/umi-request
  */
 import { extend } from 'umi-request';
-import { notification } from 'antd';
+import { notification,message } from 'antd';
+import {history} from 'umi';
+import { stringify } from 'querystring';
+
+const { REACT_APP_ENV } = process.env;
+
+console.log(REACT_APP_ENV)
+
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
   201: '新建或修改数据成功。',
@@ -52,5 +59,104 @@ const request = extend({
   errorHandler,
   // 默认错误处理
   credentials: 'include', // 默认请求是否带上cookie
+  prefix:process.env.API_ENV=='master'?'http://tender.sasvalue.com':null
 });
+
+message.config({
+  maxCount:1
+})
+ 
+// request拦截器, 改变url 或 options.
+request.interceptors.request.use(async (url, options) => {
+  console.log('url',url)
+  let c_token = localStorage.getItem("token");
+  let expires_in= localStorage.getItem('expires_in');
+  
+  if (c_token) {
+    const headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': c_token
+    };
+    //如果是刷新token就跳过不拦截
+    if(url==='/api/v1/refresh'||url==='/api/v1/captcha'||url==='v1/send_sms'){
+      console.log('刷新token不拦截')
+      return (
+        {
+          url: url,
+          options: { ...options, headers: headers },
+        }
+      );
+    }
+    const nowTime=new Date().getTime();
+    const maxTime=parseInt(localStorage.getItem('expires_in'));
+    const loginTime=parseInt(localStorage.getItem('loginTime'))
+    // console.log(nowTime,maxTime)
+    if(nowTime>=maxTime){
+      //token过期，而且延期token也过去了，那么，清空你的数据，直接返回登录，不允许操作了
+      message.warning('请重新登录');
+      localStorage.clear()
+      // history.replace('/user/login');
+      // history.replace({
+      //   pathname: '/user/login',
+      //   search: stringify({
+      //     redirect: window.location.href,
+      //   }),
+      // });
+      return;
+    }
+    if(nowTime>=(loginTime+60*60*24*10*1000)){
+       //如果过期了还没请求新token,那就请求新token 记得带上旧token
+      request('/api/v1/refresh',{
+          method: 'POST',
+          data:{}    
+      }).then((res)=>{
+          console.log('res',res)
+          if( res.code == 0 ){
+              localStorage.setItem('token',`${res.data.token_type} ${res.data.access_token}`)
+              localStorage.setItem('expires_in',new Date().getTime()+res.data.expires_in*1000)
+              localStorage.setItem('loginTime',new Date().getTime())
+          }else{
+            message.warning('请重新登录2')
+            localStorage.clear();
+            history.replace('/');
+          }
+      })
+      return ({
+        url: url,
+        options: { ...options, headers: headers },
+      });
+    }
+    return (
+      {
+        url: url,
+        options: { ...options, headers: headers },
+      }
+    );
+  } else {
+    // const headers = {
+    //   'Content-Type': 'application/json',
+    //   'Accept': 'application/json',
+    //   'Authorization': c_token
+    // };
+    return (
+      {
+        url: url,
+        options: { ...options },
+      }
+    );
+  }
+
+})
+
+// response拦截器, 处理response
+// request.interceptors.response.use((response, options) => {
+//   let token = response.headers.get("token");
+//   if (token) {
+//     localStorage.setItem("token", token);
+//   }
+//   return response;
+// });
+
+
 export default request;

@@ -11,9 +11,9 @@ import { Alert, Space, message, Tabs,Button } from 'antd';
 import React, { useState ,useEffect,useRef} from 'react';
 import ProForm, { ProFormCaptcha, ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
 import { useIntl, connect, FormattedMessage } from 'umi';
-import { getFakeCaptcha ,captcha} from '@/services/login';
+import { getFakeCaptcha ,captcha,send_sms} from '@/services/login';
 import styles from './index.less';
-
+import logo from '../../../assets/logo.jpg';
 
 
 const LoginMessage = ({ content }) => (
@@ -35,61 +35,112 @@ const Login = (props) => {
   const [form] = ProForm.useForm();
 
   const intervalRef = useRef(null);
-  console.log(1,intervalRef)
+  // console.log(1,intervalRef)
   const handleSubmit = (values) => {
     const { dispatch } = props;
     dispatch({
       type: 'login/login',
-      payload: { ...values, type },
+      payload: { ...values },
     });
   };
 
   const [captchaVal, setCaptchaVal] = useState('获取验证码');
+  const [door, setDoor] = useState(false);
+
+
+  //短信验证码
   const getYam=async()=>{
-    // if (!form.getFieldValue('mobile')) {
-    //   message.error('请先输入正确手机号');
-    //   console.log(form,form.getFieldValue('mobile'))
-    //   return false;
-    // }
-    // if (!form.getFieldValue('yzm')) {
-    //   message.error('请先输入正确验证码');
-    //   console.log(form.getFieldValue('yzm'))
-    //   return false;
-    // }
+    console.log(form.getFieldValue())
+    if (!form.getFieldValue('mobile')) {
+      message.error('请先输入正确手机号');
+      console.log(form,form.getFieldValue('mobile'))
+      return false;
+    }
+    if (!form.getFieldValue('yzm')) {
+      message.error('请先输入验证码');
+      console.log(form.getFieldValue('yzm'))
+      return false;
+    }
+
+    var params={
+      captcha_value:form.getFieldValue('yzm'),
+      captcha_key:captcha_key,
+      mobile:form.getFieldValue('mobile')
+    };
+    var result = await send_sms(params);
+    console.log('短信验证码',result);
+    if(result.code==-1){
+      message.error(result.message);
+      return false;
+    }else if(result.code==0){
+      message.success(result.message);
+    }
+
     var num=30;
+    setCaptchaVal(`${num}秒后获取`);
+    setDoor(true);
     const timer=setInterval(()=>{
-      setCaptchaVal(`${num--}秒后重新获取`)
-    },1000)
+      setCaptchaVal(`${--num}秒后获取`);
+      if(num==0){
+        clearInterval(intervalRef.current);
+        setCaptchaVal(`获取验证码`)
+        setDoor(false);
+      }
+    },1000);
+ 
     intervalRef.current = timer;
     console.log(2,intervalRef)
   }
-
-  useEffect(async() => {
-    // const result = await captcha();
-    //console.log(666,result)
-    return ()=>clearInterval(intervalRef.current)
+  const [pic, setPic] = useState('');
+  const [captcha_key, setCaptcha_key] = useState('');
+   //获取图片验证码
+  const getPic=async()=>{
+    var result = await captcha();
+    console.log(666,result)
+    setPic(result.data.img)
+    setCaptcha_key(result.data.key)
+  }
+  useEffect(() => {
+    getPic()
+    return ()=>{
+      console.log(13,intervalRef.current)
+      clearInterval(intervalRef.current)
+    }
   }, []);
 
   return (
-    <div className={styles.main}>
+    <div className={styles.logo}>
+      <h2>用户登录</h2>
+      <div className={styles.content2}>
+      <div style={{textAlign: 'center'}}>
+        {/* <img style={{width:80}} src={logo}/> */}
+      </div>
       <ProForm
-        // form={ProForm}
+        form={form}
         initialValues={{
           autoLogin: true,
         }}
         submitter={{
           render: (_, dom) => dom.pop(),
+          searchConfig: {
+            submitText: '登录',
+          },
           submitButtonProps: {
             loading: submitting,
             size: 'large',
             style: {
               width: '100%',
+              marginTop: '60px'
             },
           },
         }}
         onFinish={(values) => {
           console.log('账号验证码',values)
-          handleSubmit(values);
+          var params={
+            code:values.yzmPic,
+            mobile:values.mobile
+          }
+          handleSubmit(params);
           return Promise.resolve();
         }}
       >
@@ -180,10 +231,22 @@ const Login = (props) => {
                     required: true,
                     message: '验证码是必填项！',
                   },
+                  // {
+                  //   validator:  ((rule, value) => {
+                  //     console.log(rule,value);
+                  //     if(value=="1"){
+                  //       return Promise.reject('验证码错误');
+                  //     }else if(value=='123'){
+                  //       return Promise.resolve()
+                  //     }else{
+                  //       return Promise.reject('验证码是必填项！');
+                  //     }
+                  //   }),
+                  // },
                 ]}
               />
               <div style={{marginLeft:20,height:40,fontSize:16,width:120}}>
-                <img src=''/>
+                <img onClick={getPic} src={pic}/>
               </div>
             </div>
             
@@ -202,7 +265,7 @@ const Login = (props) => {
                   },
                 ]}
               />
-              <Button onClick={getYam} style={{marginLeft:20,height:40,fontSize:16,width:120}}>{captchaVal}</Button>
+              <Button type='primary' disabled={door} onClick={getYam} style={{marginLeft:20,height:40,fontSize:14,width:'140px'}}>{captchaVal}</Button>
             </div>
           </>
       
@@ -229,6 +292,7 @@ const Login = (props) => {
         <TaobaoCircleOutlined className={styles.icon} />
         <WeiboCircleOutlined className={styles.icon} />
       </Space> */}
+      </div>
     </div>
   );
 };

@@ -47,4 +47,7 @@ export default defineConfig({
     babelPlugins: [],
     babelOptions: {},
   },
+  define: {
+    'process.env.API_ENV': REACT_APP_ENV,
+  },
 });

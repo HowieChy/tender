@@ -1,4 +1,6 @@
 import { queryCurrent, query as queryUsers } from '@/services/user';
+import {history} from 'umi';
+import {message} from 'antd';
 const UserModel = {
   namespace: 'user',
   state: {
@@ -15,6 +17,14 @@ const UserModel = {
 
     *fetchCurrent(_, { call, put }) {
       const response = yield call(queryCurrent);
+      console.log('当前用户',response);
+      if(response.code==-1){
+        message.config({
+          maxCount: 1,
+        });
+        // message.error(response.message)
+        // history.go(-1)
+      }
       yield put({
         type: 'saveCurrentUser',
         payload: response,

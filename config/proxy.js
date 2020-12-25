@@ -8,7 +8,7 @@
 export default {
   dev: {
     '/api/': {
-      target: 'https://www.showdoc.com.cn/tenderapi',
+      target: 'http://tender.sasvalue.com',
       changeOrigin: true,
       pathRewrite: {
         '^': '',
