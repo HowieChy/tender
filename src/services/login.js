@@ -8,3 +8,9 @@ export async function fakeAccountLogin(params) {
 export async function getFakeCaptcha(mobile) {
   return request(`/api/login/captcha?mobile=${mobile}`);
 }
+
+
+//图片验证码
+export async function captcha() {
+  return request(`/api/v1/captcha`);
+}

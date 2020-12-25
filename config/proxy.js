@@ -8,7 +8,7 @@
 export default {
   dev: {
     '/api/': {
-      target: 'https://preview.pro.ant.design',
+      target: 'https://www.showdoc.com.cn/tenderapi',
       changeOrigin: true,
       pathRewrite: {
         '^': '',

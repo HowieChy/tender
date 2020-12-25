@@ -65,7 +65,7 @@ export default [
               // },
               {
                 name: '招投标',
-                icon: 'smile',
+                icon: 'Form',
                 path: '/bid',
                 routes: [
                   {
@@ -74,27 +74,23 @@ export default [
                     component: './BidRecord', // authority: ['admin'],
                   },
                   {
-                    // name: '步骤',
-                    icon: 'smile',
+                    // name: '步骤1',
                     path: '/bid/bidrecord/step1',
                     component: './Step',
                   },
                   {
-                    // name: '步骤',
-                    icon: 'smile',
+                    // name: '步骤2',
                     path: '/bid/bidrecord/step2',
                     component: './Step',
                   },
                   {
-                    // name: '步骤',
-                    icon: 'smile',
-                    path: '/bid/bidrecord/step3',
+                    // name: '查看步骤1',
+                    path: '/bid/bidrecord/step1Detail/:detailId',
                     component: './Step',
                   },
                   {
-                    // name: '步骤',
-                    icon: 'smile',
-                    path: '/bid/bidrecord/step4',
+                    // name: '步骤1',
+                    path: '/bid/bidrecord/step2Detail/:detailId',
                     component: './Step',
                   },
                 ],

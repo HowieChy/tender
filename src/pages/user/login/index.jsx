@@ -7,12 +7,14 @@ import {
   UserOutlined,
   WeiboCircleOutlined,
 } from '@ant-design/icons';
-import { Alert, Space, message, Tabs } from 'antd';
-import React, { useState } from 'react';
+import { Alert, Space, message, Tabs,Button } from 'antd';
+import React, { useState ,useEffect,useRef} from 'react';
 import ProForm, { ProFormCaptcha, ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
 import { useIntl, connect, FormattedMessage } from 'umi';
-import { getFakeCaptcha } from '@/services/login';
+import { getFakeCaptcha ,captcha} from '@/services/login';
 import styles from './index.less';
+
+
 
 const LoginMessage = ({ content }) => (
   <Alert
@@ -31,6 +33,9 @@ const Login = (props) => {
   const [type, setType] = useState('account');
   const intl = useIntl();
   const [form] = ProForm.useForm();
+
+  const intervalRef = useRef(null);
+  console.log(1,intervalRef)
   const handleSubmit = (values) => {
     const { dispatch } = props;
     dispatch({
@@ -39,9 +44,36 @@ const Login = (props) => {
     });
   };
 
+  const [captchaVal, setCaptchaVal] = useState('获取验证码');
+  const getYam=async()=>{
+    // if (!form.getFieldValue('mobile')) {
+    //   message.error('请先输入正确手机号');
+    //   console.log(form,form.getFieldValue('mobile'))
+    //   return false;
+    // }
+    // if (!form.getFieldValue('yzm')) {
+    //   message.error('请先输入正确验证码');
+    //   console.log(form.getFieldValue('yzm'))
+    //   return false;
+    // }
+    var num=30;
+    const timer=setInterval(()=>{
+      setCaptchaVal(`${num--}秒后重新获取`)
+    },1000)
+    intervalRef.current = timer;
+    console.log(2,intervalRef)
+  }
+
+  useEffect(async() => {
+    // const result = await captcha();
+    //console.log(666,result)
+    return ()=>clearInterval(intervalRef.current)
+  }, []);
+
   return (
     <div className={styles.main}>
       <ProForm
+        // form={ProForm}
         initialValues={{
           autoLogin: true,
         }}
@@ -61,69 +93,7 @@ const Login = (props) => {
           return Promise.resolve();
         }}
       >
-        {/* <Tabs activeKey={type} onChange={setType}>
-          <Tabs.TabPane
-            key="account"
-            tab={intl.formatMessage({
-              id: 'pages.login.accountLogin.tab',
-              defaultMessage: '账户密码登录',
-            })}
-          />
-          <Tabs.TabPane
-            key="mobile"
-            tab={intl.formatMessage({
-              id: 'pages.login.phoneLogin.tab',
-              defaultMessage: '手机号登录',
-            })}
-          />
-        </Tabs> */}
-{/* 
-        {status === 'error' && loginType === 'account' && !submitting && (
-          <LoginMessage
-            content={intl.formatMessage({
-              id: 'pages.login.accountLogin.errorMessage',
-              defaultMessage: '账户或密码错误（admin/ant.design)',
-            })}
-          />
-        )}
-        {type === 'account' && (
-          <>
-            <ProFormText
-              name="userName"
-              fieldProps={{
-                size: 'large',
-                prefix: <UserOutlined className={styles.prefixIcon} />,
-              }}
-              placeholder={intl.formatMessage({
-                id: 'pages.login.username.placeholder',
-                defaultMessage: '用户名: admin or user',
-              })}
-              rules={[
-                {
-                  required: true,
-                  message: '用户名是必填项！',
-                },
-              ]}
-            />
-            <ProFormText.Password
-              name="password"
-              fieldProps={{
-                size: 'large',
-                prefix: <LockTwoTone className={styles.prefixIcon} />,
-              }}
-              placeholder={intl.formatMessage({
-                id: 'pages.login.password.placeholder',
-                defaultMessage: '密码: ant.design',
-              })}
-              rules={[
-                {
-                  required: true,
-                  message: '密码是必填项！',
-                },
-              ]}
-            />
-          </>
-        )} */}
+
 
         {status === 'error' && loginType === 'mobile' && !submitting && (
           <LoginMessage content="验证码错误" />
@@ -148,9 +118,7 @@ const Login = (props) => {
                 },
               ]}
             />
-            <ProFormCaptcha
-
-              
+            {/* <ProFormCaptcha
               fieldProps={{
                 size: 'large',
                 prefix: <MailTwoTone className={styles.prefixIcon} />,
@@ -196,7 +164,9 @@ const Login = (props) => {
 
                 // message.success('获取验证码成功！验证码为：1234');
               }}
-            />
+            /> */}
+       
+
             <div className={styles.items} >
               <ProFormText
                 fieldProps={{
@@ -204,7 +174,7 @@ const Login = (props) => {
                   prefix: <MailTwoTone className={styles.prefixIcon} />,
                 }}
                 name="yzm"
-                placeholder={'验证码'}
+                placeholder={'图片验证码'}
                 rules={[
                   {
                     required: true,
@@ -212,9 +182,27 @@ const Login = (props) => {
                   },
                 ]}
               />
-              <div>
-                123
+              <div style={{marginLeft:20,height:40,fontSize:16,width:120}}>
+                <img src=''/>
               </div>
+            </div>
+            
+            <div className={styles.items} >
+              <ProFormText
+                fieldProps={{
+                  size: 'large',
+                  prefix: <MailTwoTone className={styles.prefixIcon} />,
+                }}
+                name="yzmPic"
+                placeholder={'手机验证码'}
+                rules={[
+                  {
+                    required: true,
+                    message: '验证码是必填项！',
+                  },
+                ]}
+              />
+              <Button onClick={getYam} style={{marginLeft:20,height:40,fontSize:16,width:120}}>{captchaVal}</Button>
             </div>
           </>
       

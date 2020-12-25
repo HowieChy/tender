@@ -6,8 +6,8 @@ const { Step } = Steps;
 
 import Step1 from './components/Step1';
 import Step2 from './components/Step2';
-// import Step3 from './components/Step3';
-// import Step4 from './components/Step4';
+import Step3 from './components/Step1Detail';
+import Step4 from './components/Step2Detail';
 
 const getCurrentStepAndComponent = () => {
   console.log(window.location.pathname.split('/')[3]);
@@ -25,16 +25,18 @@ const getCurrentStepAndComponent = () => {
         component: <Step2 />,
       };
 
-    case 'step3':
+    case 'step1Detail':
       return {
         step: 2,
         component: <Step3 />,
       };
-    default:
+      
+    case 'step2Detail':
       return {
-        step: 3,
+        step: 2,
         component: <Step4 />,
       };
+ 
   }
 };
 
