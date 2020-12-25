@@ -18,6 +18,7 @@ export default (props) => {
   const [tags1, setTags1] = useState([]);
   const [tags2, setTags2] = useState([]);
   const [tags3, setTags3] = useState([]);
+  const [door, setDoor] = useState(false);
   useEffect(() => {
     if(localStorage.getItem('step1')){
       // form.setFieldsValue({
@@ -70,6 +71,9 @@ export default (props) => {
     console.log('Success:', values);
     console.log(values.time)
     localStorage.setItem('step1',JSON.stringify(values));
+    if(door){
+      history.push('/bid/bidrecord/step2')
+    }
   };
 
   
@@ -251,13 +255,14 @@ export default (props) => {
             </Col>
           </Row >
           <div style={{ textAlign: 'right', marginTop: 20 }}>
-            <Button style={{ marginRight: 20 }} type="primary" htmlType="submit">
+            <Button onClick={()=>  setDoor(false)} style={{ marginRight: 20 }} type="primary" htmlType="submit">
               暂存
             </Button>
             <Button  htmlType="submit" onClick={() => {
               console.log(form)
+              setDoor(true)
               form.validateFields()
-              history.push('/bid/bidrecord/step2')
+             
             }}>下一步</Button>
           </div>
         </Form>

@@ -35,6 +35,7 @@ const UserLayout = (props) => {
         <title>{title}</title>
         <meta name="description" content={title} />
       </Helmet>
+      <div style={{display:"flex",flexDirection:'column',height:'100vh'}}>
       {/* 头部 */}
       <header className={styles.header}>
         <div>
@@ -81,6 +82,7 @@ const UserLayout = (props) => {
           </div>
           <p>Copyright © www.QiMao.cn, All Rights Reserved. 投标报价分析测算平台</p>
       </footer>
+      </div>
     </HelmetProvider>
   );
 };

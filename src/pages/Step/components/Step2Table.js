@@ -120,7 +120,7 @@ export class EditableTable extends React.Component {
       {
         title: '其他得分',
         dataIndex: 'other',
-        width: '3%',
+        width: '5%',
         editable: true,
       },
       {
