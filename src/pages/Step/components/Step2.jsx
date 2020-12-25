@@ -19,13 +19,19 @@ export default (props) => {
 
   useEffect(() => {
     const {num1,num2,num3}=JSON.parse(localStorage.getItem('step1'));
-    console.log(233,num1,num2,num3)
+    console.log(233,num1,num2,num3);
+    var num1Val=localStorage.getItem('num1Val')?localStorage.getItem('num1Val'):num1[0];
+    var num2Val=localStorage.getItem('num2Val')?localStorage.getItem('num2Val'):num2[0];
+    var num3Val=localStorage.getItem('num3Val')?localStorage.getItem('num3Val'):num3[0];
+    num1Val=num1.includes(num1Val)?num1Val:num1[0];
+    num2Val=num2.includes(num2Val)?num2Val:num2[0];
+    num3Val=num3.includes(num3Val)?num3Val:num3[0];
     setNum1(num1)
-    setNum1Val(num1[0])
+    setNum1Val(num1Val)
     setNum2(num2)
-    setNum2Val(num2[0])
+    setNum2Val(num2Val)
     setNum3(num3)
-    setNum3Val(num3[0]);
+    setNum3Val(num3Val);
     const step2=localStorage.getItem('step2');
     if(step2){
       console.log(123,step2)
@@ -81,6 +87,9 @@ export default (props) => {
           <div style={{textAlign: 'right'}}>
             <Button  style={{ marginRight: 20 }} onClick={()=>{
               localStorage.setItem('step2',JSON.stringify(allData))
+              localStorage.setItem('num1Val',num1Val);
+              localStorage.setItem('num2Val',num2Val);
+              localStorage.setItem('num3Val',num3Val);
               history.go(-1)
             }}>上一步</Button>
             <Button  style={{ marginRight: 20 }} onClick={sum}>计算</Button>
