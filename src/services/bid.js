@@ -21,3 +21,13 @@ export async function ads() {
 // export async function fakeAccountLogin(params) {
 //   return request(Lib.url_mc+`/Api/Account/User/AccessToken?${stringify(params)}`);
 // }
+
+export async function tenders() {
+  return request('/api/v1/tenders');
+}
+
+
+export async function dictionaries() {
+  return request('/api/v1/dictionaries');
+}
+

@@ -7,18 +7,52 @@ import styles from './index.less';
 const { TabPane } = Tabs;
 const { confirm } = Modal;
 
-import { delInfo ,query} from '@/services/bid';
+import { delInfo ,tenders,dictionaries} from '@/services/bid';
 
 
 export default () => {
   const [loading, setLoading] = useState(true);
   const [mode, setMode] = useState('0');
 
+  const [data,setData]=useState([])
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 0);
+    getTenders()
+    getDictionaries()
   }, []);
+
+  //获取投标列表
+  const getTenders=async() =>{
+     var result =await tenders();
+     console.log('投标列表',result)
+     var arr=[];
+     if(result.code==0){
+      result.data.data.map((item,index)=>{
+        arr.push({
+          key: index,
+          name: item.project_name,
+          time: item.bid_open_time,
+          address: item.bid_open_address[0].name+item.bid_open_address[1].name+item.bid_open_address[2].name,
+          adjustment:'0.95',
+          coefficient:item.selected_adjustment_coefficient,//选中的调整系数
+          complex:item.selected_compound_coefficient,//选中的复合系数
+          float:item.float_coefficient,//选中的下浮系数
+          remark:'2333',
+          status:item.status==1?'开标记录':'报价测算'
+        })
+      })
+     }
+     setData(arr)
+  }
+
+  //评标办法
+  const [evaluation,setEvaluation]=useState([])
+  const getDictionaries=async() =>{
+    var result =await dictionaries();
+    console.log('评标办法',result.data.bid_evaluation_method)
+    setEvaluation(result.data.bid_evaluation_method);
+  }
+  
+
   const handleModeChange=(e)=>{
     const mode = e.target.value;
     console.log(mode);
@@ -84,18 +118,18 @@ export default () => {
   };
 
   //表格数据
-  const data=[{
-    key: 0,
-    name: `项目1`,
-    time: '2019-12-01 09:30',
-    address: `浙江省宁波市江北区`,
-    adjustment:'0.95',
-    coefficient:'0.35',
-    complex:'0.3',
-    float:'1,2,3',
-    remark:'2333',
-    status:'归档'
-  }]
+  // const data=[{
+  //   key: 0,
+  //   name: `项目1`,
+  //   time: '2019-12-01 09:30',
+  //   address: `浙江省宁波市江北区`,
+  //   adjustment:'0.95',
+  //   coefficient:'0.35',
+  //   complex:'0.3',
+  //   float:'1,2,3',
+  //   remark:'2333',
+  //   status:'归档'
+  // }]
 
   async function showConfirm() {
     console.log(selectedVal)
