@@ -2,7 +2,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import React, { useState, useEffect } from 'react';
 import { Spin, Button, Card, Col, Row, Form, Input, Checkbox, DatePicker, Cascader, Select,Tag ,Tooltip } from 'antd';
 import styles from './index.less';
-import { history } from 'umi';
+import { useHistory ,useParams  } from 'umi';
 // import options from '../../../utils/cascader-address-options';
 import moment from 'moment';
 import cascaderOptions, { DivisionUtil } from '@pansy/china-division';
@@ -14,25 +14,64 @@ import { PlusOutlined } from '@ant-design/icons';
 
 import {EditableTagGroup} from './EditableTagGroup'
 
+import { tendersDetail,dictionaries } from '@/services/bid';
+
 export default (props) => {
+  //hooks，获取 params 对象。 params 对象为动态路由（例如：/users/:id）里的参数键值对。
+  const params = useParams()
+
   const [tags1, setTags1] = useState([]);
   const [tags2, setTags2] = useState([]);
   const [tags3, setTags3] = useState([]);
   const [door, setDoor] = useState(false);
-  useEffect(() => {
-    console.log(1005)
-    if(localStorage.getItem('step1')){
+
+  //投标详情
+  const detail=async(params)=>{
+    return await tendersDetail(params.detailId)
+  }
+
+  useEffect(async() => {
+    console.log('useHistory ',params)
+    getDictionaries()
+    const result= await detail(params)
+    console.log(1226,result);
+    var obj=result.data;
+    var address=[];
+    result.data.bid_open_address.map(item=>{
+      address.push(item.id)
+    })
+
+    obj={
+      name:obj.project_name,
+      price:obj.budget_price,
+      time:obj.bid_open_time,
+      method:obj.bid_evaluation_method_dict_id,
+      num1:obj.adjustment_coefficient,
+      num2:JSON.parse(obj.compound_coefficient),  
+      num3:obj.float_coefficient,  
+      person1:obj.project_manager,
+      person2:obj.project_general,
+      book:obj.tender_preparation,
+      proxy:obj.proxy_agent,
+      address:address
+    }
+
+    console.log(123,obj);
+
+    localStorage.setItem('step1Detail',JSON.stringify(obj))
+
+    if(localStorage.getItem('step1Detail')){
       // form.setFieldsValue({
       //   time:moment("2020-12-23T08:43:33.184Z")
       // });
-      var step1=JSON.parse(localStorage.getItem('step1'));
+      var step1=JSON.parse(localStorage.getItem('step1Detail'));
       console.log(step1);
       for(var i in step1){
         // console.log(i, step1[i] );
         var obj=JSON.parse(`{"${i}":"${step1[i]}"}`);
         if(i=='time'){
           form.setFieldsValue({
-            time:moment("2020-12-23T08:43:33.184Z")
+            time:moment(step1[i] )
           });
         }else if(i=="address"){
           form.setFieldsValue({
@@ -56,6 +95,10 @@ export default (props) => {
           form.setFieldsValue({
             num3:step1[i]
           });
+        }else if(i=='method'){
+          form.setFieldsValue({
+            method:parseInt(step1[i])
+          });
         }
         else{
           form.setFieldsValue(obj);
@@ -65,14 +108,22 @@ export default (props) => {
   
     }
   }, []);
-  // const {go} = props;
+
+
+  //评标办法
+  const [evaluation,setEvaluation]=useState([])
+  const getDictionaries=async() =>{
+    var result =await dictionaries();
+    console.log('评标办法',result.data.bid_evaluation_method)
+    setEvaluation(result.data.bid_evaluation_method);
+  }
 
   const onFinish = values => {
     console.log('Success:', values);
     console.log(values.time)
-    localStorage.setItem('step1',JSON.stringify(values));
+    localStorage.setItem('step1Detail',JSON.stringify(values));
     if(door){
-      history.push('/bid/bidrecord/step2')
+      history.push('/bid/bidrecord/step2Detail')
     }
   };
 
@@ -80,31 +131,12 @@ export default (props) => {
   const onFinishFailed = errorInfo => {
     console.log('Failed:', errorInfo);
     console.log(errorInfo.values.time, moment(errorInfo.values.time).format());
-    localStorage.setItem('step1',JSON.stringify(errorInfo.values));
+    localStorage.setItem('step1Detail',JSON.stringify(errorInfo.values));
   };
 
 
-  // function onChange(value, dateString) {
-  //   console.log('Selected Time: ', value);
-  //   console.log('Formatted Selected Time: ', dateString);
-  // }
-
-  // function onOk(value) {
-  //   console.log('onOk: ', value);
-  // }
-
-
-  // const getNum1=(val)=>{
-  //   console.log('num1',val)
-  // }
-  // const getNum2=(val)=>{
-  //   console.log('num2',val)
-  // }
-  // const getNum3=(val)=>{
-  //   console.log('num3',val)
-  // }
   const [form] = Form.useForm();
-  console.log(form)
+  // console.log(form)
   const getNum1=(val)=>{
     console.log('num1',val)
     form.setFieldsValue({ num1: val });
@@ -210,13 +242,13 @@ export default (props) => {
                 <Form.Item
                   label="评估办法"
                   name="method"
-                  initialValue={'0'}
+            
                   rules={[{ required: true, message: '请输入项目名称' }]}
                 >
-                  <Select  style={{ width: '100%' }}  >
-                    <Option value="0">综合评价法</Option>
-                    {/* <Option value="1">算术平均法</Option>
-                    <Option value="2">去高低算术平均法</Option> */}
+                   <Select  style={{ width: '100%' }}  >
+                    {evaluation.map((item,index)=>
+                       <Option key={index} value={item.id}>{item.value}</Option>
+                    )}
                   </Select>
                  
                 </Form.Item>

@@ -15,7 +15,7 @@ class SecurityLayout extends React.Component {
     const { dispatch } = this.props;
 
     if (dispatch) {
-      console.log('获取个人信息')
+      // console.log('url',url)
       dispatch({
         type: 'user/fetchCurrent',
       });

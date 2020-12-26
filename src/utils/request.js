@@ -68,7 +68,7 @@ message.config({
  
 // request拦截器, 改变url 或 options.
 request.interceptors.request.use(async (url, options) => {
-  console.log('url',url)
+  // console.log('url',url)
   let c_token = localStorage.getItem("token");
   let expires_in= localStorage.getItem('expires_in');
   

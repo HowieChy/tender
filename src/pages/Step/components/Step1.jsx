@@ -6,13 +6,19 @@ import { history } from 'umi';
 // import options from '../../../utils/cascader-address-options';
 import moment from 'moment';
 import cascaderOptions, { DivisionUtil } from '@pansy/china-division';
+const divisionUtil = new DivisionUtil(cascaderOptions);
+
 const { Option } = Select;
 
 // console.log('cascaderOptions',cascaderOptions);
 
+import { addTenders} from '@/services/bid';
+
 import { PlusOutlined } from '@ant-design/icons';
 
 import {EditableTagGroup} from './EditableTagGroup'
+
+import { dictionaries} from '@/services/bid';
 
 export default (props) => {
   const [tags1, setTags1] = useState([]);
@@ -20,6 +26,9 @@ export default (props) => {
   const [tags3, setTags3] = useState([]);
   const [door, setDoor] = useState(false);
   useEffect(() => {
+
+    getDictionaries()
+
     if(localStorage.getItem('step1')){
       // form.setFieldsValue({
       //   time:moment("2020-12-23T08:43:33.184Z")
@@ -45,16 +54,18 @@ export default (props) => {
             num1:step1[i]
           });
         }else if(i=='num2'){
-     
           setTags2(step1[i])
           form.setFieldsValue({
             num2:step1[i]
           });
         }else if(i=='num3'){
-     
           setTags3(step1[i])
           form.setFieldsValue({
             num3:step1[i]
+          });
+        }else if(i=='method'){
+          form.setFieldsValue({
+            method:parseInt(step1[i])
           });
         }
         else{
@@ -67,10 +78,43 @@ export default (props) => {
   }, []);
   // const {go} = props;
 
+  //评标办法
+  const [evaluation,setEvaluation]=useState([])
+  const getDictionaries=async() =>{
+    var result =await dictionaries();
+    console.log('评标办法',result.data.bid_evaluation_method)
+    setEvaluation(result.data.bid_evaluation_method);
+  }
+
+
   const onFinish = values => {
+    console.log(moment(values.time).format())
     console.log('Success:', values);
-    console.log(values.time)
     localStorage.setItem('step1',JSON.stringify(values));
+    var arr=[];
+    values.address.map(item=>{
+      arr.push({
+        id:item,
+        name:divisionUtil.getNameByCode(item)
+      })
+    })
+
+    var parmas={
+      project_name:values.name,
+      bid_open_time:moment(values.time).format().split('T')[0]+' '+moment(values.time).format().split('T')[1].split('+')[0],
+      bid_open_address:JSON.stringify(arr),
+      budget_price:values.price,
+      bid_evaluation_method_dict_id:values.method,
+      adjustment_coefficient:JSON.stringify(values.num1),
+      compound_coefficient:JSON.stringify(values.num2),
+      float_coefficient:JSON.stringify(values.num3),
+      project_manager:values.person1,
+      project_general:values.person2,
+      tender_preparation:values.book,
+      proxy_agent:values.proxy
+    }
+    console.log(JSON.stringify(parmas));
+    add(parmas)
     if(door){
       history.push('/bid/bidrecord/step2')
     }
@@ -83,26 +127,6 @@ export default (props) => {
     localStorage.setItem('step1',JSON.stringify(errorInfo.values));
   };
 
-
-  // function onChange(value, dateString) {
-  //   console.log('Selected Time: ', value);
-  //   console.log('Formatted Selected Time: ', dateString);
-  // }
-
-  // function onOk(value) {
-  //   console.log('onOk: ', value);
-  // }
-
-
-  // const getNum1=(val)=>{
-  //   console.log('num1',val)
-  // }
-  // const getNum2=(val)=>{
-  //   console.log('num2',val)
-  // }
-  // const getNum3=(val)=>{
-  //   console.log('num3',val)
-  // }
   const [form] = Form.useForm();
   console.log(form)
   const getNum1=(val)=>{
@@ -118,13 +142,19 @@ export default (props) => {
     form.setFieldsValue({ num3: val });
   }
 
+  //新增投标
+  const add=async(val)=>{
+    const result=await addTenders(val);
+    console.log(result)
+  }
+
   return (
     <>
       <div className={styles.card}>
         <Form
           form={form}
-          name="basic"
-          initialValues={{ remember: true }}
+          // name="basic"
+          // initialValues={{ remember: true }}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
         >
@@ -175,28 +205,28 @@ export default (props) => {
                 <Form.Item
                   label="项目经理"
                   name="person1"
-                // rules={[{ required: true, message: '请输入项目名称' }]}
+                rules={[{ required: true, message: '请输入项目经理' }]}
                 >
                   <Input />
                 </Form.Item>
                 <Form.Item
                   label="项目总工"
                   name="person2"
-                // rules={[{ required: true, message: '请输入招标预算价' }]}
+                rules={[{ required: true, message: '请输入项目总工' }]}
                 >
                   <Input />
                 </Form.Item>
                 <Form.Item
                   label="标书制作"
                   name="book"
-                // rules={[{ required: true, message: '请输入招标预算价' }]}
+                rules={[{ required: true, message: '请输入' }]}
                 >
                   <Input />
                 </Form.Item>
                 <Form.Item
                   label="委托代理"
                   name="proxy"
-                // rules={[{ required: true, message: '请输入招标预算价' }]}
+                  rules={[{ required: true, message: '请输入' }]}
                 >
                   <Input />
                 </Form.Item>
@@ -210,13 +240,14 @@ export default (props) => {
                 <Form.Item
                   label="评估办法"
                   name="method"
-                  initialValue={'0'}
+                  // initialValue={'0'}
                   rules={[{ required: true, message: '请输入项目名称' }]}
                 >
                   <Select  style={{ width: '100%' }}  >
-                    <Option value="0">综合评价法</Option>
-                    {/* <Option value="1">算术平均法</Option>
-                    <Option value="2">去高低算术平均法</Option> */}
+                    {evaluation.map((item,index)=>
+                       <Option key={index} value={item.id}>{item.value}</Option>
+                    )}
+                 
                   </Select>
                  
                 </Form.Item>
@@ -227,7 +258,7 @@ export default (props) => {
                   name="num1"
                   rules={[{ required: true, message: '请增加调整系数' }]}
                 >
-                  {/* <Input disabled={true}/> */}
+               
                   {tags1.length>0&&<EditableTagGroup tags={tags1} getChild={getNum1}/>}
                   {tags1.length==0&&<EditableTagGroup tags={tags1} getChild={getNum1}/>}
                 </Form.Item>
@@ -236,8 +267,7 @@ export default (props) => {
                   name="num2"
                   rules={[{ required: true, message: '请增加复合系数' }]}
                 >
-                    {/* <EditableTagGroup getChild={getNum2}/> */}
-                    {tags2.length>0&&<EditableTagGroup tags={tags2} getChild={getNum2}/>}
+                  {tags2.length>0&&<EditableTagGroup tags={tags2} getChild={getNum2}/>}
                   {tags2.length==0&&<EditableTagGroup tags={tags2} getChild={getNum2}/>}
                 </Form.Item>
                 <Form.Item
@@ -245,7 +275,7 @@ export default (props) => {
                   name="num3"
                   rules={[{ required: true, message: '请增加下浮系数' }]}
                 >
-                  {/* <EditableTagGroup getChild={getNum3}/> */}
+               
                   {tags3.length>0&&<EditableTagGroup tags={tags3} getChild={getNum3}/>}
                   {tags3.length==0&&<EditableTagGroup tags={tags3} getChild={getNum3}/>}
                 </Form.Item>
@@ -267,7 +297,7 @@ export default (props) => {
           </div>
         </Form>
       </div>
-      {/* <Button  onClick={()=>go(1)}>下一步</Button> */}
+   
 
 
     </>

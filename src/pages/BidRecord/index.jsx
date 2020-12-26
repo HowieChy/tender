@@ -17,25 +17,35 @@ export default () => {
   const [data,setData]=useState([])
   useEffect(() => {
     getTenders()
-    getDictionaries()
+
   }, []);
 
+  const [evaluation,setEvaluation]=useState([])
   //获取投标列表
   const getTenders=async() =>{
+
      var result =await tenders();
-     console.log('投标列表',result)
+      //评标办法
+     var result2 =await dictionaries();
+     console.log('评标办法',result2.data.bid_evaluation_method)
+     console.log('投标列表',result.data.data)
+
      var arr=[];
+    
      if(result.code==0){
       result.data.data.map((item,index)=>{
         arr.push({
+          id:item.id,
           key: index,
           name: item.project_name,
           time: item.bid_open_time,
           address: item.bid_open_address[0].name+item.bid_open_address[1].name+item.bid_open_address[2].name,
-          adjustment:'0.95',
+          adjustment:result2.data.bid_evaluation_method.filter((atem)=>{
+            return atem.id==item.bid_evaluation_method_dict_id
+          })[0].value,
           coefficient:item.selected_adjustment_coefficient,//选中的调整系数
           complex:item.selected_compound_coefficient,//选中的复合系数
-          float:item.float_coefficient,//选中的下浮系数
+          float:item.selected_float_coefficient,//选中的下浮系数
           remark:'2333',
           status:item.status==1?'开标记录':'报价测算'
         })
@@ -44,13 +54,8 @@ export default () => {
      setData(arr)
   }
 
-  //评标办法
-  const [evaluation,setEvaluation]=useState([])
-  const getDictionaries=async() =>{
-    var result =await dictionaries();
-    console.log('评标办法',result.data.bid_evaluation_method)
-    setEvaluation(result.data.bid_evaluation_method);
-  }
+ 
+
   
 
   const handleModeChange=(e)=>{
@@ -60,7 +65,7 @@ export default () => {
   }
   const go=(val)=>{
     console.log('gogogo',val)
-    history.push(`/bid/bidrecord/step1Detail/${val.key}`);
+    history.push(`/bid/bidrecord/step1Detail/${val.id}`);
   }
   //表头
   const columns = [
@@ -68,7 +73,7 @@ export default () => {
       title: '项目名称',
       dataIndex: 'name',
       render: (text, record) =>
-      <div onClick={go.bind(this,record)}>{record.name}</div>
+      <div style={{color:'#1890ff',cursor:"pointer"}} onClick={go.bind(this,record)}>{record.name}</div>
        
     },
     {

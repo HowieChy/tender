@@ -26,8 +26,17 @@ export async function tenders() {
   return request('/api/v1/tenders');
 }
 
-
 export async function dictionaries() {
   return request('/api/v1/dictionaries');
 }
 
+export async function addTenders(params) {
+  return request('/api/v1/tenders', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function tendersDetail(params) {
+  return request(`/api/v1/tenders/${params}`);
+}
