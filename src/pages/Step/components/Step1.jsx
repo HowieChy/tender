@@ -1,6 +1,6 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useState, useEffect } from 'react';
-import { Spin, Button, Card, Col, Row, Form, Input, Checkbox, DatePicker, Cascader, Select,Tag ,Tooltip } from 'antd';
+import { Spin, Button, Card, Col, Row, Form, Input, Checkbox, DatePicker, Cascader, Select,Tag ,Tooltip, message } from 'antd';
 import styles from './index.less';
 import { history } from 'umi';
 // import options from '../../../utils/cascader-address-options';
@@ -12,21 +12,33 @@ const { Option } = Select;
 
 // console.log('cascaderOptions',cascaderOptions);
 
-import { addTenders} from '@/services/bid';
+import { addTenders,editTenders,dictionaries} from '@/services/bid';
 
 import { PlusOutlined } from '@ant-design/icons';
 
 import {EditableTagGroup} from './EditableTagGroup'
+import { result } from 'lodash';
 
-import { dictionaries} from '@/services/bid';
 
 export default (props) => {
+  //调整系数
   const [tags1, setTags1] = useState([]);
+  //复合系数
   const [tags2, setTags2] = useState([]);
+  //下浮系数
   const [tags3, setTags3] = useState([]);
+  //false暂存,true下一步
   const [door, setDoor] = useState(false);
-  useEffect(() => {
 
+  const [isEdit, setIsEdit] = useState(false);
+  const [tender_id, setTender_id] = useState();
+
+  useEffect(() => {
+    var tenderId=localStorage.getItem('tender_id');
+    if(tenderId){
+      setTender_id(tenderId);
+      setIsEdit(true)
+    }
     getDictionaries()
 
     if(localStorage.getItem('step1')){
@@ -36,9 +48,9 @@ export default (props) => {
       var step1=JSON.parse(localStorage.getItem('step1'));
       console.log(step1);
       for(var i in step1){
-        console.log(i, step1[i] );
+        // console.log(i, step1[i] );
         var obj=JSON.parse(`{"${i}":"${step1[i]}"}`);
-        console.log(666,obj)
+        // console.log(666,obj)
         if(i=='time'){
           form.setFieldsValue({
             time:moment("2020-12-23T08:43:33.184Z")
@@ -75,6 +87,11 @@ export default (props) => {
       }
   
     }
+
+    return ()=>{
+      //localStorage.removeItem('current')
+      console.log('销毁组件')
+    }
   }, []);
   // const {go} = props;
 
@@ -87,7 +104,9 @@ export default (props) => {
   }
 
 
-  const onFinish = values => {
+  const onFinish = async(values) => {
+    console.log('isEdit',isEdit);
+
     console.log(moment(values.time).format())
     console.log('Success:', values);
     localStorage.setItem('step1',JSON.stringify(values));
@@ -111,24 +130,53 @@ export default (props) => {
       project_manager:values.person1,
       project_general:values.person2,
       tender_preparation:values.book,
-      proxy_agent:values.proxy
+      proxy_agent:values.proxy,
+      tender_id:tender_id
     }
     console.log(JSON.stringify(parmas));
-    add(parmas)
+
     if(door){
-      history.push('/bid/bidrecord/step2')
+      //下一步
+      if(isEdit){
+        //编辑
+        const result=await edit(parmas)
+        console.log('编辑',result)
+      }else{
+        //新增
+        const result=await add(parmas)
+        console.log('新增',result)
+        localStorage.setItem('tender_id',result.data.id)
+      }
+      if(result.code==-1){
+        message.error(result.message);
+        return false
+      }
+      history.push('/bid/bidrecord/step2');
+    }else{
+      //暂存
+      if(isEdit){
+        //编辑
+        const result=await edit(parmas)
+        console.log('编辑',result)
+      }else{
+        //新增
+        const result=await add(parmas)
+        console.log('新增',result)
+      }
+      localStorage.removeItem('tender_id');
+      history.go(-1)
     }
   };
 
   
   const onFinishFailed = errorInfo => {
     console.log('Failed:', errorInfo);
-    console.log(errorInfo.values.time, moment(errorInfo.values.time).format());
-    localStorage.setItem('step1',JSON.stringify(errorInfo.values));
+    // console.log(errorInfo.values.time, moment(errorInfo.values.time).format());
+    // localStorage.setItem('step1',JSON.stringify(errorInfo.values));
   };
 
   const [form] = Form.useForm();
-  console.log(form)
+  // console.log(form)
   const getNum1=(val)=>{
     console.log('num1',val)
     form.setFieldsValue({ num1: val });
@@ -146,6 +194,14 @@ export default (props) => {
   const add=async(val)=>{
     const result=await addTenders(val);
     console.log(result)
+    return result
+  }
+
+  //编辑投标
+  const edit=async(val)=>{
+    const result=await editTenders(val);
+    console.log(result)
+    return result
   }
 
   return (
@@ -167,7 +223,7 @@ export default (props) => {
                   name="name"
                   rules={[{ required: true, message: '请输入项目名称' }]}
                 >
-                  <Input />
+                  <Input disabled={isEdit} maxLength={30}/>
                 </Form.Item>
 
                 <Form.Item
@@ -175,7 +231,7 @@ export default (props) => {
                   name="time"
                   rules={[{ required: true, message: '请选择时间' }]}
                 >
-                  <DatePicker style={{ width: '100%' }} showTime />
+                  <DatePicker  disabled={isEdit} style={{ width: '100%' }} showTime />
                 </Form.Item>
 
                 <Form.Item
@@ -184,6 +240,7 @@ export default (props) => {
                   rules={[{ required: true, message: '请选择地点' }]}
                 >
                   <Cascader
+                    disabled={isEdit}
                     options={cascaderOptions}
                   />
                 </Form.Item>
@@ -191,9 +248,10 @@ export default (props) => {
                 <Form.Item
                   label="招标预算价"
                   name="price"
+                  disabled={isEdit}
                   rules={[{ required: true, message: '请输入招标预算价' }]}
                 >
-                  <Input prefix="￥" />
+                  <Input  disabled={isEdit} prefix="￥" type='number' />
                 </Form.Item>
 
               </div>
@@ -205,30 +263,30 @@ export default (props) => {
                 <Form.Item
                   label="项目经理"
                   name="person1"
-                rules={[{ required: true, message: '请输入项目经理' }]}
+                  rules={[{ required: true, message: '请输入项目经理' }]}
                 >
-                  <Input />
+                  <Input maxLength={10}/>
                 </Form.Item>
                 <Form.Item
                   label="项目总工"
                   name="person2"
-                rules={[{ required: true, message: '请输入项目总工' }]}
+                  rules={[{ required: true, message: '请输入项目总工' }]}
                 >
-                  <Input />
+                  <Input maxLength={10}/>
                 </Form.Item>
                 <Form.Item
                   label="标书制作"
                   name="book"
-                rules={[{ required: true, message: '请输入' }]}
+                  rules={[{ required: true, message: '请输入' }]}
                 >
-                  <Input />
+                  <Input maxLength={10}/>
                 </Form.Item>
                 <Form.Item
                   label="委托代理"
                   name="proxy"
                   rules={[{ required: true, message: '请输入' }]}
                 >
-                  <Input />
+                  <Input maxLength={10}/>
                 </Form.Item>
 
               </div>
@@ -243,7 +301,7 @@ export default (props) => {
                   // initialValue={'0'}
                   rules={[{ required: true, message: '请输入项目名称' }]}
                 >
-                  <Select  style={{ width: '100%' }}  >
+                  <Select  disabled={isEdit} style={{ width: '100%' }}  >
                     {evaluation.map((item,index)=>
                        <Option key={index} value={item.id}>{item.value}</Option>
                     )}
@@ -259,16 +317,18 @@ export default (props) => {
                   rules={[{ required: true, message: '请增加调整系数' }]}
                 >
                
-                  {tags1.length>0&&<EditableTagGroup tags={tags1} getChild={getNum1}/>}
-                  {tags1.length==0&&<EditableTagGroup tags={tags1} getChild={getNum1}/>}
+                  {!isEdit&&tags1.length>0&&<EditableTagGroup tags={tags1} getChild={getNum1}/>}
+                  {!isEdit&&tags1.length==0&&<EditableTagGroup tags={tags1} getChild={getNum1}/>}
+                    {isEdit&&tags1.map((item,index)=><span style={{border:'1px solid #d9d9d9',padding:'0px 6px',marginRight:10}} key={index}>{item}</span>)}
                 </Form.Item>
                 <Form.Item
                   label="复合系数"
                   name="num2"
                   rules={[{ required: true, message: '请增加复合系数' }]}
                 >
-                  {tags2.length>0&&<EditableTagGroup tags={tags2} getChild={getNum2}/>}
-                  {tags2.length==0&&<EditableTagGroup tags={tags2} getChild={getNum2}/>}
+                  {!isEdit&&tags2.length>0&&<EditableTagGroup tags={tags2} getChild={getNum2}/>}
+                  {!isEdit&&tags2.length==0&&<EditableTagGroup tags={tags2} getChild={getNum2}/>}
+                  {isEdit&&tags2.map((item,index)=><span style={{border:'1px solid #d9d9d9',padding:'0px 6px',marginRight:10}} key={index}>{item}</span>)}
                 </Form.Item>
                 <Form.Item
                   label="下浮系数"
@@ -276,8 +336,9 @@ export default (props) => {
                   rules={[{ required: true, message: '请增加下浮系数' }]}
                 >
                
-                  {tags3.length>0&&<EditableTagGroup tags={tags3} getChild={getNum3}/>}
-                  {tags3.length==0&&<EditableTagGroup tags={tags3} getChild={getNum3}/>}
+                  {!isEdit&&tags3.length>0&&<EditableTagGroup tags={tags3} getChild={getNum3}/>}
+                  {!isEdit&&tags3.length==0&&<EditableTagGroup tags={tags3} getChild={getNum3}/>}
+                  {isEdit&&tags3.map((item,index)=><span style={{border:'1px solid #d9d9d9',padding:'0px 6px',marginRight:10}} key={index}>{item}</span>)}
                 </Form.Item>
 
               </div>

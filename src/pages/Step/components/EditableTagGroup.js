@@ -82,6 +82,7 @@ export  class EditableTagGroup extends React.Component {
                 onChange={this.handleEditInputChange}
                 onBlur={this.handleEditInputConfirm}f
                 onPressEnter={this.handleEditInputConfirm}
+                type='number'
               />
             );
           }
@@ -127,6 +128,7 @@ export  class EditableTagGroup extends React.Component {
             onChange={this.handleInputChange}
             onBlur={this.handleInputConfirm}
             onPressEnter={this.handleInputConfirm}
+            type='number'
           />
         )}
         {!inputVisible && (

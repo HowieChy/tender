@@ -115,7 +115,7 @@ export class EditableTable extends React.Component {
         title: '手动下浮率',
         dataIndex: 'float',
         width: '5%',
-        editable: true,
+        // editable: true,
       },
       {
         title: '其他得分',
@@ -221,6 +221,7 @@ export class EditableTable extends React.Component {
     const newData = {
       key: dataSource.length,
       index:dataSource.length+1,
+      name:`投标人${dataSource.length+1}`,
       has:true
     };
     this.setState({

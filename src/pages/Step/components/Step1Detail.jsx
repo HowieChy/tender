@@ -14,7 +14,8 @@ import { PlusOutlined } from '@ant-design/icons';
 
 import {EditableTagGroup} from './EditableTagGroup'
 
-import { tendersDetail,dictionaries } from '@/services/bid';
+import { tendersDetail,dictionaries,editTenders } from '@/services/bid';
+
 
 export default (props) => {
   //hooks，获取 params 对象。 params 对象为动态路由（例如：/users/:id）里的参数键值对。
@@ -25,6 +26,8 @@ export default (props) => {
   const [tags3, setTags3] = useState([]);
   const [door, setDoor] = useState(false);
 
+  const [tender_id, setTender_id] = useState();
+  
   //投标详情
   const detail=async(params)=>{
     return await tendersDetail(params.detailId)
@@ -35,6 +38,8 @@ export default (props) => {
     getDictionaries()
     const result= await detail(params)
     console.log(1226,result);
+    localStorage.setItem('tender_id',result.data.id)
+    setTender_id(result.data.id);
     var obj=result.data;
     var address=[];
     result.data.bid_open_address.map(item=>{
@@ -118,13 +123,42 @@ export default (props) => {
     setEvaluation(result.data.bid_evaluation_method);
   }
 
-  const onFinish = values => {
+  const onFinish = async(values) => {
     console.log('Success:', values);
     console.log(values.time)
     localStorage.setItem('step1Detail',JSON.stringify(values));
-    if(door){
-      history.push('/bid/bidrecord/step2Detail')
+    var parmas={
+      // project_name:values.name,
+      // bid_open_time:moment(values.time).format().split('T')[0]+' '+moment(values.time).format().split('T')[1].split('+')[0],
+      // bid_open_address:JSON.stringify(arr),
+      // budget_price:values.price,
+      // bid_evaluation_method_dict_id:values.method,
+      // adjustment_coefficient:JSON.stringify(values.num1),
+      // compound_coefficient:JSON.stringify(values.num2),
+      // float_coefficient:JSON.stringify(values.num3),
+      project_manager:values.person1,
+      project_general:values.person2,
+      tender_preparation:values.book,
+      proxy_agent:values.proxy,
+      tender_id:tender_id
     }
+    console.log(JSON.stringify(parmas));
+
+    if(door){
+      //下一步
+      const result=await edit(parmas);
+      console.log('编辑',result)
+      history.push('/bid/bidrecord/step2Detail');
+    }else{
+      const result=await edit(parmas)
+      console.log('编辑',result)
+      localStorage.removeItem('tender_id');
+      history.go(-1)
+    }
+
+    // if(door){
+    //   history.push('/bid/bidrecord/step2Detail')
+    // }
   };
 
   
@@ -132,6 +166,9 @@ export default (props) => {
     console.log('Failed:', errorInfo);
     console.log(errorInfo.values.time, moment(errorInfo.values.time).format());
     localStorage.setItem('step1Detail',JSON.stringify(errorInfo.values));
+
+  
+
   };
 
 
@@ -150,6 +187,13 @@ export default (props) => {
     form.setFieldsValue({ num3: val });
   }
 
+    //编辑投标
+    const edit=async(val)=>{
+      const result=await editTenders(val);
+      console.log(result)
+      return result
+    }
+  
   return (
     <>
       <div className={styles.card}>
@@ -169,7 +213,7 @@ export default (props) => {
                   name="name"
                   rules={[{ required: true, message: '请输入项目名称' }]}
                 >
-                  <Input />
+                  <Input disabled={true} maxLength={30}/>
                 </Form.Item>
 
                 <Form.Item
@@ -177,7 +221,7 @@ export default (props) => {
                   name="time"
                   rules={[{ required: true, message: '请选择时间' }]}
                 >
-                  <DatePicker style={{ width: '100%' }} showTime />
+                  <DatePicker disabled={true} style={{ width: '100%' }} showTime />
                 </Form.Item>
 
                 <Form.Item
@@ -186,6 +230,7 @@ export default (props) => {
                   rules={[{ required: true, message: '请选择地点' }]}
                 >
                   <Cascader
+                    disabled={true}
                     options={cascaderOptions}
                   />
                 </Form.Item>
@@ -195,7 +240,7 @@ export default (props) => {
                   name="price"
                   rules={[{ required: true, message: '请输入招标预算价' }]}
                 >
-                  <Input prefix="￥" />
+                  <Input disabled={true} prefix="￥" type='number' />
                 </Form.Item>
 
               </div>
@@ -207,48 +252,49 @@ export default (props) => {
                 <Form.Item
                   label="项目经理"
                   name="person1"
-                // rules={[{ required: true, message: '请输入项目名称' }]}
+                  rules={[{ required: true, message: '请输入项目经理' }]}
                 >
-                  <Input />
+                  <Input maxLength={10}/>
                 </Form.Item>
                 <Form.Item
                   label="项目总工"
                   name="person2"
-                // rules={[{ required: true, message: '请输入招标预算价' }]}
+                  rules={[{ required: true, message: '请输入项目总工' }]}
                 >
-                  <Input />
+                  <Input maxLength={10}/>
                 </Form.Item>
                 <Form.Item
                   label="标书制作"
                   name="book"
-                // rules={[{ required: true, message: '请输入招标预算价' }]}
+                  rules={[{ required: true, message: '请输入' }]}
                 >
-                  <Input />
+                  <Input maxLength={10}/>
                 </Form.Item>
                 <Form.Item
                   label="委托代理"
                   name="proxy"
-                // rules={[{ required: true, message: '请输入招标预算价' }]}
+                  rules={[{ required: true, message: '请输入' }]}
                 >
-                  <Input />
+                  <Input maxLength={10}/>
                 </Form.Item>
 
               </div>
 
-            </Col>
+              </Col>
             <Col span={8}>
               <div className={styles.item}>
                 <div className={styles.tip}>评估办法</div>
                 <Form.Item
                   label="评估办法"
                   name="method"
-            
+                  // initialValue={'0'}
                   rules={[{ required: true, message: '请输入项目名称' }]}
                 >
-                   <Select  style={{ width: '100%' }}  >
+                  <Select  disabled={true} style={{ width: '100%' }}  >
                     {evaluation.map((item,index)=>
                        <Option key={index} value={item.id}>{item.value}</Option>
                     )}
+                 
                   </Select>
                  
                 </Form.Item>
@@ -259,27 +305,29 @@ export default (props) => {
                   name="num1"
                   rules={[{ required: true, message: '请增加调整系数' }]}
                 >
-                  {/* <Input disabled={true}/> */}
-                  {tags1.length>0&&<EditableTagGroup tags={tags1} getChild={getNum1}/>}
-                  {tags1.length==0&&<EditableTagGroup tags={tags1} getChild={getNum1}/>}
+               
+                  {/* {!isEdit&&tags1.length>0&&<EditableTagGroup tags={tags1} getChild={getNum1}/>}
+                  {!isEdit&&tags1.length==0&&<EditableTagGroup tags={tags1} getChild={getNum1}/>} */}
+                    {tags1.map((item,index)=><span style={{border:'1px solid #d9d9d9',padding:'0px 6px',marginRight:10}} key={index}>{item}</span>)}
                 </Form.Item>
                 <Form.Item
                   label="复合系数"
                   name="num2"
                   rules={[{ required: true, message: '请增加复合系数' }]}
                 >
-                    {/* <EditableTagGroup getChild={getNum2}/> */}
-                    {tags2.length>0&&<EditableTagGroup tags={tags2} getChild={getNum2}/>}
-                  {tags2.length==0&&<EditableTagGroup tags={tags2} getChild={getNum2}/>}
+                  {/* {!isEdit&&tags2.length>0&&<EditableTagGroup tags={tags2} getChild={getNum2}/>}
+                  {!isEdit&&tags2.length==0&&<EditableTagGroup tags={tags2} getChild={getNum2}/>} */}
+                  {tags2.map((item,index)=><span style={{border:'1px solid #d9d9d9',padding:'0px 6px',marginRight:10}} key={index}>{item}</span>)}
                 </Form.Item>
                 <Form.Item
                   label="下浮系数"
                   name="num3"
                   rules={[{ required: true, message: '请增加下浮系数' }]}
                 >
-                  {/* <EditableTagGroup getChild={getNum3}/> */}
-                  {tags3.length>0&&<EditableTagGroup tags={tags3} getChild={getNum3}/>}
-                  {tags3.length==0&&<EditableTagGroup tags={tags3} getChild={getNum3}/>}
+               
+                  {/* {!isEdit&&tags3.length>0&&<EditableTagGroup tags={tags3} getChild={getNum3}/>}
+                  {!isEdit&&tags3.length==0&&<EditableTagGroup tags={tags3} getChild={getNum3}/>} */}
+                  {tags3.map((item,index)=><span style={{border:'1px solid #d9d9d9',padding:'0px 6px',marginRight:10}} key={index}>{item}</span>)}
                 </Form.Item>
 
               </div>

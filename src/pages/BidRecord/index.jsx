@@ -13,7 +13,7 @@ import { delInfo ,tenders,dictionaries} from '@/services/bid';
 export default () => {
   const [loading, setLoading] = useState(true);
   const [mode, setMode] = useState('0');
-
+  const [currentNum,setCurrentNum]=useState(1);
   const [data,setData]=useState([])
   useEffect(() => {
     getTenders()
@@ -46,17 +46,17 @@ export default () => {
           coefficient:item.selected_adjustment_coefficient,//选中的调整系数
           complex:item.selected_compound_coefficient,//选中的复合系数
           float:item.selected_float_coefficient,//选中的下浮系数
-          remark:'2333',
+          remark:'',
           status:item.status==1?'开标记录':'报价测算'
         })
       })
      }
      setData(arr)
+     setCurrentNum(localStorage.getItem('current')?Number(localStorage.getItem('current')):1)
+     setLoading(false)
+     console.log(localStorage.getItem('current'))
+
   }
-
- 
-
-  
 
   const handleModeChange=(e)=>{
     const mode = e.target.value;
@@ -138,6 +138,7 @@ export default () => {
 
   async function showConfirm() {
     console.log(selectedVal)
+    return false
     confirm({
       title: '请问确定删除吗',
       icon: <ExclamationCircleOutlined />,
@@ -157,15 +158,23 @@ export default () => {
       },
     });
   }
-  
+  const changeNum=(val)=>{
+    console.log('val',val);
+    setCurrentNum(val);
+    localStorage.setItem('current',val)
+  }
   return (
-
+      
       <div className={styles.bid}>
          <Space>
         </Space>
         <div className={styles.top}>
           <span>全部招投标信息</span>
-          <Button onClick={()=>history.push('/bid/bidrecord/step1')} type="primary">新建</Button>
+          <Button onClick={()=>{
+            localStorage.removeItem('tender_id')
+            history.push('/bid/bidrecord/step1')
+          }} 
+          type="primary">新建</Button>
         </div>
         <div className={styles.content}>
         <Radio.Group size={'large'} onChange={handleModeChange} value={mode}  style={{marginTop:20}}>
@@ -173,7 +182,10 @@ export default () => {
           {/* <Radio.Button value="left">Vertical</Radio.Button> */}
         </Radio.Group>
         {/* 表格 */}
-        <Table rowSelection={rowSelection} columns={columns} dataSource={data} />
+        <Table  pagination={{
+          current:currentNum,
+          onChange:changeNum
+          }} loading={loading} rowSelection={rowSelection} columns={columns} dataSource={data} />
         <div>
      
         </div>

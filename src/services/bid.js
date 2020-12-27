@@ -40,3 +40,11 @@ export async function addTenders(params) {
 export async function tendersDetail(params) {
   return request(`/api/v1/tenders/${params}`);
 }
+
+
+export async function editTenders(params) {
+  return request(`/api/v1/tenders/${params.tender_id}`, {
+    method: 'PUT',
+    data: params,
+  });
+}
