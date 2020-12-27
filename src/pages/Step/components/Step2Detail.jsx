@@ -2,12 +2,14 @@ import { PageContainer } from '@ant-design/pro-layout';
 import React, { useState, useEffect,useCallback,useMemo } from 'react';
 import { Spin ,Button ,Select,} from 'antd';
 import styles from './index.less';
-import {history} from 'umi';
+import {history,useParams} from 'umi';
 import {EditableTable} from './Step2Table'
-
+import { tender_quotations ,editTender_quotations} from '@/services/bid';
 const { Option } = Select;
 
 export default (props) => {
+   const params = useParams()
+
    const [num1, setNum1] = useState([]);
    const [num1Val, setNum1Val] = useState();
    const [num2, setNum2] = useState([]);
@@ -17,15 +19,25 @@ export default (props) => {
 
   const [allData, setallData] = useState([]);
 
-  useEffect(() => {
-    const {num1,num2,num3}=JSON.parse(localStorage.getItem('step1'));
+  useEffect( () => {
+ 
+    detail(params)
+   
+  }, []);
+
+  //投标详情
+  const detail=async(params)=>{
+    const result= await tender_quotations(params.detailId)
+    console.log(1227,result);
+
+    const {num1,num2,num3}=JSON.parse(localStorage.getItem('step1Detail'));
     console.log(233,num1,num2,num3);
     var num1Val=localStorage.getItem('num1Val')?localStorage.getItem('num1Val'):num1[0];
     var num2Val=localStorage.getItem('num2Val')?localStorage.getItem('num2Val'):num2[0];
     var num3Val=localStorage.getItem('num3Val')?localStorage.getItem('num3Val'):num3[0];
-    num1Val=num1.includes(num1Val)?num1Val:num1[0];
-    num2Val=num2.includes(num2Val)?num2Val:num2[0];
-    num3Val=num3.includes(num3Val)?num3Val:num3[0];
+    // num1Val=num1.includes(num1Val)?num1Val:num1[0];
+    // num2Val=num2.includes(num2Val)?num2Val:num2[0];
+    // num3Val=num3.includes(num3Val)?num3Val:num3[0];
     setNum1(num1)
     setNum1Val(num1Val)
     setNum2(num2)
@@ -37,7 +49,9 @@ export default (props) => {
       console.log(123,step2)
       setallData(JSON.parse(step2))
     }
-  }, []);
+
+  }
+
 
   const sum=()=>{
       // console.log(this.child.state)

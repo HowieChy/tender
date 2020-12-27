@@ -17,13 +17,13 @@ const UserModel = {
 
     *fetchCurrent(_, { call, put }) {
       const response = yield call(queryCurrent);
-      // console.log('当前用户',response);
+      console.log('当前用户',response);
       if(response.code==-1){
         message.config({
           maxCount: 1,
         });
         message.error(response.message)
-        history.go(-1)
+        history.push('/user/login')
       }
       yield put({
         type: 'saveCurrentUser',

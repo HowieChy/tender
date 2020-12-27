@@ -48,3 +48,17 @@ export async function editTenders(params) {
     data: params,
   });
 }
+
+
+export async function tender_quotations(params) {
+  return request(`/api/v1/tender_quotations?tender_id=${params}`);
+}
+
+
+
+export async function editTender_quotations(params) {
+  return request(`/api/v1/tender_quotations`, {
+    method: 'POST',
+    data: params,
+  });
+}

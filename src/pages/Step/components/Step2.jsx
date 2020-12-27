@@ -1,10 +1,10 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useState, useEffect,useCallback,useMemo } from 'react';
-import { Spin ,Button ,Select,} from 'antd';
+import { Spin ,Button ,Select, message} from 'antd';
 import styles from './index.less';
 import {history} from 'umi';
-import {EditableTable} from './Step2Table'
-
+import {EditableTable,} from './Step2Table'
+import { editTender_quotations } from '@/services/bid';
 const { Option } = Select;
 
 export default (props) => {
@@ -23,9 +23,9 @@ export default (props) => {
     var num1Val=localStorage.getItem('num1Val')?localStorage.getItem('num1Val'):num1[0];
     var num2Val=localStorage.getItem('num2Val')?localStorage.getItem('num2Val'):num2[0];
     var num3Val=localStorage.getItem('num3Val')?localStorage.getItem('num3Val'):num3[0];
-    num1Val=num1.includes(num1Val)?num1Val:num1[0];
-    num2Val=num2.includes(num2Val)?num2Val:num2[0];
-    num3Val=num3.includes(num3Val)?num3Val:num3[0];
+    // num1Val=num1.includes(num1Val)?num1Val:num1[0];
+    // num2Val=num2.includes(num2Val)?num2Val:num2[0];
+    // num3Val=num3.includes(num3Val)?num3Val:num3[0];
     setNum1(num1)
     setNum1Val(num1Val)
     setNum2(num2)
@@ -47,6 +47,29 @@ export default (props) => {
   const getData=(val)=>{
     console.log('子组件数据',val)
     setallData(val)
+  }
+
+  const edit=async()=>{
+    // var quotations=[];
+    var quotations=[];
+    allData.map(item=>{
+      quotations.push({
+        bidder:item.name
+      })
+    })
+    var parmas={
+      quotations:JSON.stringify(quotations),
+      tender_id:localStorage.getItem('tender_id'),
+      selected_adjustment_coefficient:num1,
+      selected_compound_coefficient:num2,
+      selected_float_coefficient:num3
+    }
+    const result = await editTender_quotations(parmas);
+    console.log('编辑结果',result);
+    if(result.code==-1){
+      message.error(result.message)
+    }
+    //history.push('/bid/bidrecord');
   }
 
   // const EditableTable=useMemo(()=>{
@@ -93,7 +116,7 @@ export default (props) => {
               history.go(-1)
             }}>上一步</Button>
             <Button  style={{ marginRight: 20 }} onClick={sum}>计算</Button>
-            <Button  type='primary' onClick={()=>history.push('/bid/bidrecord')}>归档</Button>
+            <Button  type='primary' onClick={edit}>归档</Button>
           </div>
     </div>
   );

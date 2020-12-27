@@ -2,7 +2,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import React, { useState, useEffect } from 'react';
 import { Spin, Button, Card, Col, Row, Form, Input, Checkbox, DatePicker, Cascader, Select,Tag ,Tooltip } from 'antd';
 import styles from './index.less';
-import { useHistory ,useParams  } from 'umi';
+import { useHistory ,useParams ,history } from 'umi';
 // import options from '../../../utils/cascader-address-options';
 import moment from 'moment';
 import cascaderOptions, { DivisionUtil } from '@pansy/china-division';
@@ -32,6 +32,8 @@ export default (props) => {
   const detail=async(params)=>{
     return await tendersDetail(params.detailId)
   }
+
+
 
   useEffect(async() => {
     console.log('useHistory ',params)
@@ -148,7 +150,7 @@ export default (props) => {
       //下一步
       const result=await edit(parmas);
       console.log('编辑',result)
-      history.push('/bid/bidrecord/step2Detail');
+      history.push(`/bid/bidrecord/step2Detail/${params.detailId}`);
     }else{
       const result=await edit(parmas)
       console.log('编辑',result)

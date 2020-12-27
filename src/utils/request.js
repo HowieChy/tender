@@ -9,7 +9,7 @@ import { stringify } from 'querystring';
 
 const { REACT_APP_ENV } = process.env;
 
-console.log(REACT_APP_ENV)
+// console.log(REACT_APP_ENV)
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
