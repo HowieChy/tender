@@ -23,9 +23,9 @@ export default (props) => {
 
   //获取数据
   const getDetail=async()=>{
-    localStorage.setItem('tender_id',params.detailId)
-    const result = await tender_quotations(params.detailId);
-    console.log('获取数据',result)
+    // localStorage.setItem('tender_id',params.detailId)
+    // const result = await tender_quotations(params.detailId);
+    // console.log('获取数据',result)
     const {num1,num2,num3}=JSON.parse(localStorage.getItem('step1'));
     console.log(233,num1,num2,num3);
     var num1Val=localStorage.getItem('num1Val')?localStorage.getItem('num1Val'):num1[0];

@@ -40,6 +40,7 @@ export default (props) => {
     getDictionaries()
     const result= await detail(params)
     console.log(1226,result);
+
     if(result.code!=0){
       return false
     }
@@ -47,6 +48,7 @@ export default (props) => {
     localStorage.setItem('num2Val',result.data.selected_compound_coefficient);
     localStorage.setItem('num3Val',result.data.selected_float_coefficient);
     localStorage.setItem('tender_id',result.data.id)
+    // localStorage.setItem('step2',JSON.stringify(result.data.result))
     setTender_id(result.data.id);
     var obj=result.data;
     var address=[];
