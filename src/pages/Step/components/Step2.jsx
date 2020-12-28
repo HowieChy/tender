@@ -84,12 +84,23 @@ export default (props) => {
       tender_id:localStorage.getItem('tender_id'),
       selected_adjustment_coefficient:num1Val,
       selected_compound_coefficient:num2Val,
-      selected_float_coefficient:num3Val
+      selected_float_coefficient:num3Val,
+      result:JSON.stringify(info)
+      // result:JSON.stringify(info.filter(i=>i.has))
     }
     const result = await editTender_quotations(parmas);
     console.log('编辑结果',result);
     if(result.code==-1){
       message.error(result.message)
+    }
+    if(result.code==0){
+      message.success(result.message);
+      localStorage.removeItem('step1');
+      localStorage.removeItem('step2');
+      localStorage.removeItem('num1Val');
+      localStorage.removeItem('num2Val');
+      localStorage.removeItem('num3Val');
+      history.push('/bid/bidrecord');
     }
     //history.push('/bid/bidrecord');
   }

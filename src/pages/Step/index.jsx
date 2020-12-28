@@ -27,13 +27,13 @@ const getCurrentStepAndComponent = () => {
 
     case 'step1Detail':
       return {
-        step: 2,
+        step: 0,
         component: <Step3 />,
       };
       
     case 'step2Detail':
       return {
-        step: 2,
+        step: 1,
         component: <Step4 />,
       };
  

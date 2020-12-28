@@ -1,8 +1,9 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
-import { Table, Input, Button, Popconfirm, Form ,Switch} from 'antd';
+import { Table, Input, Button, Popconfirm, Form ,Switch,message} from 'antd';
 import {
   CloseCircleOutlined,
 } from '@ant-design/icons';
+import { sum } from 'lodash';
 
 
 const EditableContext = React.createContext();
@@ -204,9 +205,27 @@ export class EditableTable extends React.Component {
   change=(val)=>{
     console.log(val);
     const dataSource = [...this.state.dataSource];
-    dataSource[val.key].has=false;
+    dataSource[val.key].has=!dataSource[val.key].has;
+    var newArr=[];
+    dataSource.map((item,index) =>{
+      newArr.push({
+        ...item,
+        key:index,
+        index:index+1,
+        num1:null,
+        num2:null,
+        num3:null,
+        num4:null,
+        num5:null,
+        num6:null,
+        num7:null,
+        num8:null,
+      })
+    })
     this.setState({
-      dataSource: dataSource,
+      dataSource: newArr,
+    },()=>{
+      this.sumAll()
     });
   }
   handleDelete = (key) => {
@@ -221,11 +240,21 @@ export class EditableTable extends React.Component {
         ...item,
         key:index,
         index:index+1,
+        num1:null,
+        num2:null,
+        num3:null,
+        num4:null,
+        num5:null,
+        num6:null,
+        num7:null,
+        num8:null,
       })
     })
     console.log('newArr',newArr)
     this.setState({
       dataSource: newArr,
+    },()=>{
+      this.sumAll()
     });
   };
   handleAdd = () => {
@@ -298,11 +327,16 @@ export class EditableTable extends React.Component {
         })
       })
     }
- 
     console.log('编辑后',row,newData,budgetPrice)
     this.setState({
       dataSource: newArr,
     });
+    if(row.dataIndex!='remark'){
+      //计算
+      this.sumAll()
+    }
+   
+    
   };
 
   // shouldComponentUpdate=(nextProps,nextState)=>{
@@ -314,6 +348,7 @@ export class EditableTable extends React.Component {
     // this.setState({
     //   dataSource:this.props.msg
     // })
+    console.log('创建表格')
     var step2=localStorage.getItem('step2')?JSON.parse(localStorage.getItem('step2')):[];
     this.setState({
       dataSource:step2
@@ -322,8 +357,7 @@ export class EditableTable extends React.Component {
     this.props.onRef(this)
   }
   componentDidUpdate=()=>{ 
-    console.log('表格数据',this.state.dataSource)
-
+    // console.log('表格数据',this.state.dataSource)
     // var newArr=[];
     // this.state.dataSource.map(item=>{
  
@@ -355,11 +389,19 @@ export class EditableTable extends React.Component {
      //十个区间
     var intervalArr=[];
     var intervalNumArr=[[],[],[],[],[],[],[],[],[],[]];
+    var allow=true;
     arr.map(item=>{
+      if(!item.price){
+        allow=false
+      }
       num++;
       price+=parseFloat(item.price);
       numArr.push(parseFloat(item.price))
     })
+    if(!allow){
+      //message.error('请填写投标报价')
+      return false;
+    }
     if(num<=5){
       B=price/num
     }else if(num<=12){
