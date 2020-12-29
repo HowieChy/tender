@@ -171,7 +171,9 @@ export default () => {
         <div className={styles.top}>
           <span>全部招投标信息</span>
           <Button onClick={()=>{
-            localStorage.removeItem('tender_id')
+            localStorage.removeItem('tender_id');
+            localStorage.removeItem('step1');
+            localStorage.removeItem('step2');
             history.push('/bid/bidrecord/step1')
           }} 
           type="primary">新建</Button>

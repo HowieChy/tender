@@ -60,9 +60,9 @@ const Model = {
       if (window.location.pathname !== '/user/login' && !redirect) {
         history.replace({
           pathname: '/user/login',
-          search: stringify({
-            redirect: window.location.href,
-          }),
+          // search: stringify({
+          //   redirect: window.location.href,
+          // }),
         });
         localStorage.clear()
       }

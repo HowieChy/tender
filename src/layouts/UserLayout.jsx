@@ -64,7 +64,7 @@ const UserLayout = (props) => {
           <div>
               <Link to="/">网站首页</Link>
               <span>|</span>
-              <Link to="/bid/bidrecord">帮助中心</Link>
+              <Link to="/">帮助中心</Link>
               <span>|</span>
               <Link to="/">联系我们</Link>
               <span>|</span>

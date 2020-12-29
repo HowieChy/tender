@@ -15,7 +15,6 @@ export default (props) => {
    const [num3, setNum3] = useState([]);
    const [num3Val, setNum3Val] = useState();
 
-  const [allData, setallData] = useState([]);
 
   useEffect(() => {
     const {num1,num2,num3}=JSON.parse(localStorage.getItem('step1'));
@@ -35,16 +34,11 @@ export default (props) => {
     localStorage.setItem('num1Val',num1Val);
     localStorage.setItem('num2Val',num2Val);
     localStorage.setItem('num3Val',num3Val);
-    const step2=localStorage.getItem('step2');
-    if(step2){
-      // console.log(123,step2)
-      setallData(JSON.parse(step2))
-    }
   }, []);
 
   const sum=()=>{
       // console.log(this.child.state)
-      console.log(allData)
+  
       childRef.current.sumAll()
   } 
 
@@ -57,7 +51,7 @@ export default (props) => {
         name:1
       })
     }))
-    // setallData(newArr)
+  
   }
 
   const edit=async()=>{
@@ -125,6 +119,7 @@ export default (props) => {
               <Select value={num1Val} style={{ width: '100px' }} onChange={(val)=>{
               setNum1Val(val)
               localStorage.setItem('num1Val',val);
+              sum()
               }} >
                 {num1.map(item=>
                   <Option key={item} value={item}>{item}</Option>
@@ -136,6 +131,7 @@ export default (props) => {
               <Select value={num2Val} style={{ width: '100px' }}   onChange={(val)=>{
                 setNum2Val(val)
                 localStorage.setItem('num2Val',val);
+                sum()
               }}>
                 {num2.map(item=>
                   <Option key={item} value={item}>{item}</Option>
@@ -147,6 +143,7 @@ export default (props) => {
               <Select value={num3Val} style={{ width: '100px' }}  onChange={(val)=>{
                 setNum3Val(val)
                 localStorage.setItem('num3Val',val);
+                sum()
               }}  >
                 {num3.map(item=>
                   <Option key={item} value={item}>{item}</Option>
@@ -154,13 +151,9 @@ export default (props) => {
               </Select>
             </div>
           </div>
-          {/* {allData.length>0&&  <EditableTable  msg={allData}  data={getData}/>}
-          {allData.length==0&&  <EditableTable  msg={allData}  data={getData}/>} */}
-          {allData.length>0&&  <EditableTable  onRef={onRef}  data={getData}/>}
-          {allData.length==0&&  <EditableTable onRef={onRef}  data={getData}/>}
+         <EditableTable onRef={onRef}/>
           <div style={{textAlign: 'right'}}>
             <Button  style={{ marginRight: 20 }} onClick={()=>{
-              localStorage.setItem('step2',JSON.stringify(allData))
               history.go(-1)
             }}>上一步</Button>
             <Button  style={{ marginRight: 20 }} onClick={sum}>计算</Button>

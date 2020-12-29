@@ -1,6 +1,6 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useState, useEffect } from 'react';
-import { Spin, Button, Card, Col, Row, Form, Input, Checkbox, DatePicker, Cascader, Select,Tag ,Tooltip } from 'antd';
+import { Spin, Button, Card, Col, Row, Form, Input, Checkbox, DatePicker, Cascader, Select,Tag ,Tooltip ,message } from 'antd';
 import styles from './index.less';
 import { useHistory ,useParams ,history } from 'umi';
 // import options from '../../../utils/cascader-address-options';
@@ -20,25 +20,26 @@ import { tendersDetail,dictionaries,editTenders } from '@/services/bid';
 export default (props) => {
   //hooks，获取 params 对象。 params 对象为动态路由（例如：/users/:id）里的参数键值对。
   const params = useParams()
-
+  const useHi= useHistory()
   const [tags1, setTags1] = useState([]);
   const [tags2, setTags2] = useState([]);
   const [tags3, setTags3] = useState([]);
   const [door, setDoor] = useState(false);
 
   const [tender_id, setTender_id] = useState();
+
+  //评标办法
+  const [evaluation,setEvaluation]=useState([])
   
   //投标详情
-  const detail=async(params)=>{
-    return await tendersDetail(params.detailId)
-  }
+  const detail=async()=>{
+
+    var resultDictionaries =await dictionaries();
+    console.log('评标办法',resultDictionaries.data.bid_evaluation_method)
+    setEvaluation(resultDictionaries.data.bid_evaluation_method);
 
 
-
-  useEffect(async() => {
-    console.log('useHistory ',params)
-    getDictionaries()
-    const result= await detail(params)
+    const result= await tendersDetail(params.detailId)
     console.log(1226,result);
 
     if(result.code!=0){
@@ -48,7 +49,11 @@ export default (props) => {
     localStorage.setItem('num2Val',result.data.selected_compound_coefficient);
     localStorage.setItem('num3Val',result.data.selected_float_coefficient);
     localStorage.setItem('tender_id',result.data.id)
-    // localStorage.setItem('step2',JSON.stringify(result.data.result))
+
+    if(!history.location.query.isFrom){
+      localStorage.setItem('step2',result.data.result)
+    }
+  
     setTender_id(result.data.id);
     var obj=result.data;
     var address=[];
@@ -73,13 +78,13 @@ export default (props) => {
 
     console.log(123,obj);
 
-    localStorage.setItem('step1Detail',JSON.stringify(obj))
+    localStorage.setItem('step1',JSON.stringify(obj))
 
-    if(localStorage.getItem('step1Detail')){
+    if(localStorage.getItem('step1')){
       // form.setFieldsValue({
       //   time:moment("2020-12-23T08:43:33.184Z")
       // });
-      var step1=JSON.parse(localStorage.getItem('step1Detail'));
+      var step1=JSON.parse(localStorage.getItem('step1'));
       console.log(step1);
       for(var i in step1){
         // console.log(i, step1[i] );
@@ -122,21 +127,26 @@ export default (props) => {
       }
   
     }
+
+  }
+
+
+
+  useEffect(async() => {
+    console.log('useHistory ',params)
+    //getDictionaries()
+    
+    console.log(history,useHi)
+    detail()
+   
   }, []);
 
 
-  //评标办法
-  const [evaluation,setEvaluation]=useState([])
-  const getDictionaries=async() =>{
-    var result =await dictionaries();
-    console.log('评标办法',result.data.bid_evaluation_method)
-    setEvaluation(result.data.bid_evaluation_method);
-  }
 
   const onFinish = async(values) => {
     console.log('Success:', values);
     console.log(values.time)
-    localStorage.setItem('step1Detail',JSON.stringify(values));
+    localStorage.setItem('step1',JSON.stringify(values));
     var parmas={
       // project_name:values.name,
       // bid_open_time:moment(values.time).format().split('T')[0]+' '+moment(values.time).format().split('T')[1].split('+')[0],
@@ -162,8 +172,17 @@ export default (props) => {
     }else{
       const result=await edit(parmas)
       console.log('编辑',result)
-      localStorage.removeItem('tender_id');
-      history.go(-1)
+      if(result.code==-1){
+        message.error(result.message)
+      }
+      if(result.code==0){
+        message.success(result.message)
+        localStorage.removeItem('tender_id');
+        localStorage.removeItem('num1Val');
+        localStorage.removeItem('num2Val');
+        localStorage.removeItem('num3Val');
+        history.go(-1)
+      }
     }
 
     // if(door){
@@ -175,10 +194,7 @@ export default (props) => {
   const onFinishFailed = errorInfo => {
     console.log('Failed:', errorInfo);
     console.log(errorInfo.values.time, moment(errorInfo.values.time).format());
-    localStorage.setItem('step1Detail',JSON.stringify(errorInfo.values));
-
-  
-
+    localStorage.setItem('step1',JSON.stringify(errorInfo.values));
   };
 
 

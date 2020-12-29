@@ -155,27 +155,32 @@ export class EditableTable extends React.Component {
       {
         title: '球数',
         dataIndex: 'num1',
-        width: '4%',
+        width: '3%',
+        className:'active',
       },
       {
         title: '中标签位',
         dataIndex: 'num2',
         width: '4%',
+        className:'active',
       },
       {
         title: '区间位置',
         dataIndex: 'num3',
         width: '4%',
+        className:'active',
       },
       {
         title: '总名次',
         dataIndex: 'num4',
         width: '4%',
+        className:'active',
       },
       {
         title: '总得分',
         dataIndex: 'num5',
         width: '4%',
+        className:'active',
         render: (text, record) =>
         <span>{record.num5&&parseFloat(record.num5).toFixed(2)}</span>
       },
@@ -183,11 +188,13 @@ export class EditableTable extends React.Component {
         title: '报价名次',
         dataIndex: 'num6',
         width: '4%',
+        className:'active',
       },
       {
         title: '报价分',
         dataIndex: 'num7',
         width: '4%',
+        className:'active',
         render: (text, record) =>
         <span>{record.num7&&parseFloat(record.num7).toFixed(2)}</span>
       },
@@ -195,6 +202,7 @@ export class EditableTable extends React.Component {
         title: '偏差值',
         dataIndex: 'num8',
         width: '4%',
+        className:'active',
       },
     ];
     this.state = {
@@ -259,6 +267,7 @@ export class EditableTable extends React.Component {
   };
   handleAdd = () => {
     const {  dataSource } = this.state;
+    console.log('dataSource',dataSource)
     const newData = {
       key: dataSource.length,
       index:dataSource.length+1,
@@ -351,7 +360,7 @@ export class EditableTable extends React.Component {
     console.log('创建表格')
     var step2=localStorage.getItem('step2')?JSON.parse(localStorage.getItem('step2')):[];
     this.setState({
-      dataSource:step2
+      dataSource:step2?step2:[]
     })
 
     this.props.onRef(this)
@@ -393,6 +402,10 @@ export class EditableTable extends React.Component {
     arr.map(item=>{
       if(!item.price){
         allow=false
+      }
+      //开关为关过滤
+      if(!item.has){
+        return false;
       }
       num++;
       price+=parseFloat(item.price);
@@ -473,18 +486,20 @@ export class EditableTable extends React.Component {
     var newTableArr=[];
     //总名次数组
     var num4Arr=[];
+   
     //报价分名次数组
     var num6Arr=[];
+
     //偏差值
     arr.map(item=>{
 
       //去掉最小值和最大值的计算
-      if(parseFloat(item.price)==minNum||parseFloat(item.price)==maxNum){
-        newTableArr.push({
-          ...item
-        })
-        return false
-      }
+      // if(parseFloat(item.price)==minNum||parseFloat(item.price)==maxNum){
+      //   newTableArr.push({
+      //     ...item
+      //   })
+      //   return false
+      // }
   
       //区间位置
       var num3=1;
@@ -498,31 +513,46 @@ export class EditableTable extends React.Component {
           }
         })
       }
-      //偏差值
+      if(parseFloat(item.price)==minNum||parseFloat(item.price)==maxNum){
+        num3=null
+      }
+      //偏差值 （投标价-基准价）/基准价*100%
       var num8=(item.price-C)/C*100;
       //报价分
       var num7=item.price>C?(98-num8*1.2):(98+num8*1.0);
       //总得分
       var num5=num7+(item.other?parseFloat(item.other):0)
-      num4Arr.push(num5);
-      num6Arr.push(num7)
-  
-      newTableArr.push({
-        ...item,
-        //偏差值
-        num8:num8.toFixed(2)+'%',
-        //报价分
-        num7:num7,
-        //总得分
-        num5:num5,
-        //区间位置
-        num3:num3
-      })
+
+      if(item.has){
+        num4Arr.push(num5);
+        num6Arr.push(num7);
+        newTableArr.push({
+          ...item,
+          //偏差值
+          num8:num8.toFixed(2)+'%',
+          //报价分
+          num7:num7,
+          //总得分
+          num5:num5,
+          //区间位置
+          num3:num3
+        })
+      }else{
+        newTableArr.push({
+          ...item,
+        })
+      }
+     
     })
+    console.log('总名次数组',num4Arr)
+    console.log('报价分名次数组',num6Arr)
     var newTableArr2=[];
     num4Arr.sort((a,b)=>b-a);
-    num6Arr.sort((a,b)=>b-a)
-    console.log('num4Arr',num4Arr,num6Arr)
+    num4Arr=[...new Set(num4Arr)];
+    num6Arr.sort((a,b)=>b-a);
+    num6Arr=[...new Set(num6Arr)];
+    console.log('总名次数组排序后',num4Arr)
+    console.log('报价分名次数组排序后',num6Arr)
     newTableArr.map(item=>{
       var num4,num6;
       num4Arr.map((atem,index)=>{

@@ -140,31 +140,63 @@ export default (props) => {
       if(isEdit){
         //编辑
         const result=await edit(parmas)
+        if(result.code==-1){
+          message.error(result.message);
+          return false;
+        }
+        if(result.code==0){
+          message.success(result.message)
+          history.push('/bid/bidrecord/step2');
+        }
         console.log('编辑',result)
       }else{
         //新增
         const result=await add(parmas)
         console.log('新增',result)
+        if(result.code==-1){
+          message.error(result.message);
+          return false;
+        }
+        if(result.code==0){
+          message.success(result.message)
+          history.push('/bid/bidrecord/step2');
+        }
         localStorage.setItem('tender_id',result.data.id)
       }
-      if(result.code==-1){
-        message.error(result.message);
-        return false
-      }
-      history.push('/bid/bidrecord/step2');
+   
     }else{
       //暂存
       if(isEdit){
         //编辑
         const result=await edit(parmas)
         console.log('编辑',result)
+        if(result.code==-1){
+          message.error(result.message);
+        }
+        if(result.code==0){
+          message.success(result.message)
+          localStorage.removeItem('tender_id');
+          localStorage.removeItem('num1Val');
+          localStorage.removeItem('num2Val');
+          localStorage.removeItem('num3Val');
+          history.go(-1)
+          // history.push('/bid/bidrecord/step2');
+        }
       }else{
         //新增
         const result=await add(parmas)
         console.log('新增',result)
+        if(result.code==-1){
+          message.error(result.message);
+        }
+        if(result.code==0){
+          message.success(result.message)
+          localStorage.removeItem('tender_id');
+          history.go(-1)
+          // history.push('/bid/bidrecord/step2');
+        }
       }
-      localStorage.removeItem('tender_id');
-      history.go(-1)
+
     }
   };
 

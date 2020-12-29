@@ -64,6 +64,11 @@ export default [
               //   component: './ListTableList',
               // },
               {
+                name: '仪表盘',
+                icon: 'LineChart',
+                path: '/dashboard',
+              },
+              {
                 name: '招投标',
                 icon: 'Form',
                 path: '/bid',
@@ -95,7 +100,17 @@ export default [
                   },
                 ],
               },
-  
+              {
+                name: '管理中心',
+                icon: 'Laptop',
+                path: '/management',
+                routes: [
+                  {
+                    name: '投标记录',
+                    path: '/management/evaluation',
+                    //component: './BidRecord', // authority: ['admin'],
+                  },]
+              },
               {
                 component: './404',
               },

@@ -95,8 +95,9 @@ export default (props) => {
     }
     if(result.code==0){
       message.success(result.message)
+      history.push('/bid/bidrecord');
     }
-    //history.push('/bid/bidrecord');
+ 
   }
 
   // const EditableTable=useMemo(()=>{
@@ -163,8 +164,12 @@ export default (props) => {
           <EditableTable onRef={onRef}  />
           <div style={{textAlign: 'right'}}>
             <Button  style={{ marginRight: 20 }} onClick={()=>{
-             
-              history.go(-1)
+              localStorage.setItem('stepEdit',true);
+              history.push({
+                pathname: `/bid/bidrecord/step1Detail/${params.detailId}`,
+                query: {
+                  isFrom: true,
+                }})
             }}>上一步</Button>
             <Button  style={{ marginRight: 20 }} onClick={sum}>计算</Button>
             <Button  type='primary' onClick={edit}>归档</Button>
