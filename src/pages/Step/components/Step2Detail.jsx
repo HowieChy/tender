@@ -27,7 +27,6 @@ export default (props) => {
     // const result = await tender_quotations(params.detailId);
     // console.log('获取数据',result)
     const {num1,num2,num3}=JSON.parse(localStorage.getItem('step1'));
-    console.log(233,num1,num2,num3);
     var num1Val=localStorage.getItem('num1Val')?localStorage.getItem('num1Val'):num1[0];
     var num2Val=localStorage.getItem('num2Val')?localStorage.getItem('num2Val'):num2[0];
     var num3Val=localStorage.getItem('num3Val')?localStorage.getItem('num3Val'):num3[0];

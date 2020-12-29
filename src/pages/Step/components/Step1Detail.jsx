@@ -45,13 +45,14 @@ export default (props) => {
     if(result.code!=0){
       return false
     }
-    localStorage.setItem('num1Val',result.data.selected_adjustment_coefficient);
-    localStorage.setItem('num2Val',result.data.selected_compound_coefficient);
-    localStorage.setItem('num3Val',result.data.selected_float_coefficient);
+
     localStorage.setItem('tender_id',result.data.id)
 
     if(!history.location.query.isFrom){
       localStorage.setItem('step2',result.data.result)
+      localStorage.setItem('num1Val',result.data.selected_adjustment_coefficient?result.data.selected_adjustment_coefficient:'');
+      localStorage.setItem('num2Val',result.data.selected_compound_coefficient?result.data.selected_compound_coefficient:'');
+      localStorage.setItem('num3Val',result.data.selected_float_coefficient?result.data.selected_float_coefficient:'');
     }
   
     setTender_id(result.data.id);

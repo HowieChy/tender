@@ -10,8 +10,8 @@ import Step3 from './components/Step1Detail';
 import Step4 from './components/Step2Detail';
 
 const getCurrentStepAndComponent = () => {
-  // console.log(window.location.pathname.split('/')[3]);
-  const current=window.location.pathname.split('/')[3];
+  console.log(window.location.pathname.split('/')[4]);
+  const current=window.location.pathname.split('/')[4];
   switch (current) {
     case 'step1':
       return {

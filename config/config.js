@@ -50,4 +50,6 @@ export default defineConfig({
   define: {
     'process.env.API_ENV': REACT_APP_ENV,
   },
+  base: '/home/',
+  publicPath: '/home/',
 });
