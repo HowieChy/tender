@@ -95,8 +95,9 @@ request.interceptors.request.use(async (url, options) => {
     if(nowTime>=maxTime){
       //token过期，而且延期token也过去了，那么，清空你的数据，直接返回登录，不允许操作了
       message.warning('请重新登录');
+      history.replace('/user/login');
       localStorage.clear()
-      // history.replace('/user/login');
+
       // history.replace({
       //   pathname: '/user/login',
       //   search: stringify({
@@ -117,7 +118,7 @@ request.interceptors.request.use(async (url, options) => {
               localStorage.setItem('expires_in',new Date().getTime()+res.data.expires_in*1000)
               localStorage.setItem('loginTime',new Date().getTime())
           }else{
-            message.warning('请重新登录2')
+            message.warning('请重新登录')
             localStorage.clear();
             history.replace('/');
           }
@@ -150,13 +151,18 @@ request.interceptors.request.use(async (url, options) => {
 })
 
 // response拦截器, 处理response
-// request.interceptors.response.use((response, options) => {
-//   let token = response.headers.get("token");
-//   if (token) {
-//     localStorage.setItem("token", token);
-//   }
-//   return response;
-// });
+request.interceptors.response.use(async (response, options) => {
+  const result=await response.clone().json();
+  if(result.code==-1){
+    message.error(result.message)
+    if(result.message='未登录或登录状态过期，请确认后重试！'){
+      localStorage.clear()
+      history.replace('/user/login');
+    }
+  }
+  console.log(result,response)
+  return response;
+});
 
 
 export default request;

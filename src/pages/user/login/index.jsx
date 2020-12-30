@@ -10,7 +10,7 @@ import {
 import { Alert, Space, message, Tabs,Button } from 'antd';
 import React, { useState ,useEffect,useRef} from 'react';
 import ProForm, { ProFormCaptcha, ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
-import { useIntl, connect, FormattedMessage } from 'umi';
+import { useIntl, connect, FormattedMessage ,history} from 'umi';
 import { getFakeCaptcha ,captcha,send_sms} from '@/services/login';
 import styles from './index.less';
 import logo from '../../../assets/logo.jpg';
@@ -70,7 +70,7 @@ const Login = (props) => {
     var result = await send_sms(params);
     console.log('短信验证码',result);
     if(result.code==-1){
-      message.error(result.message);
+      //message.error(result.message);
       return false;
     }else if(result.code==0){
       message.success(result.message);
@@ -101,6 +101,9 @@ const Login = (props) => {
     setCaptcha_key(result.data.key)
   }
   useEffect(() => {
+    if(localStorage.getItem('antd-pro-authority')){
+      history.push('/bid/bidrecord')
+    }
     getPic()
     return ()=>{
       console.log(13,intervalRef.current)

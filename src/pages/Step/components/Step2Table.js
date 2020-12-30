@@ -103,7 +103,7 @@ export class EditableTable extends React.Component {
       {
         title: '',
         dataIndex: 'index',
-        width: '2%',
+        width: 50,
         // render: (text, record) =>
         //   <div style={{backgroundColor:'#ccc'}} >{record.index}</div>
        
@@ -111,37 +111,37 @@ export class EditableTable extends React.Component {
       {
         title: '投标人',
         dataIndex: 'name',
-        width: '5%',
+        width: 100,
         // editable: true,
       },
       {
         title: '投标报价',
         dataIndex: 'price',
-        width: '5%',
+        width: 120,
         editable: true,
       },
       {
         title: '手动下浮率',
         dataIndex: 'float',
-        width: '5%',
+        width: 120,
         // editable: true,
       },
       {
         title: '其他得分',
         dataIndex: 'other',
-        width: '5%',
+        width: 100,
         editable: true,
       },
       {
         title: '备注标签',
         dataIndex: 'remark',
-        width: '10%',
+        width: 200,
         editable: true,
       },
       {
         title: '操作',
         dataIndex: 'operation',
-        width: '3%',
+        width: 100,
         render: (text, record) =>
           this.state.dataSource.length >= 1 ? (
             <div style={{display: 'flex',alignItems: 'center'}}>
@@ -152,57 +152,65 @@ export class EditableTable extends React.Component {
             </div>
           ) : null,
       },
-      {
-        title: '球数',
-        dataIndex: 'num1',
-        width: '3%',
-        className:'active',
-      },
-      {
-        title: '中标签位',
-        dataIndex: 'num2',
-        width: '4%',
-        className:'active',
-      },
+      // {
+      //   title: '球数',
+      //   dataIndex: 'num1',
+      //   width: 60,
+      //   className:'active',
+      //   fixed: 'right',
+      // },
+      // {
+      //   title: '中标签位',
+      //   dataIndex: 'num2',
+      //   width: 80,
+      //   className:'active',
+      //   fixed: 'right',
+      // },
       {
         title: '区间位置',
         dataIndex: 'num3',
-        width: '4%',
+        width: 80,
         className:'active',
+        fixed: 'right',
       },
       {
         title: '总名次',
         dataIndex: 'num4',
-        width: '4%',
+        width: 70,
         className:'active',
+        fixed: 'right',
       },
       {
         title: '总得分',
         dataIndex: 'num5',
-        width: '4%',
+        width: 70,
         className:'active',
         render: (text, record) =>
-        <span>{record.num5&&parseFloat(record.num5).toFixed(2)}</span>
+        <span>{record.num5&&parseFloat(record.num5).toFixed(2)}</span>,
+        fixed: 'right',
       },
       {
         title: '报价名次',
         dataIndex: 'num6',
-        width: '4%',
+        width: 80,
         className:'active',
+        fixed: 'right',
       },
       {
         title: '报价分',
         dataIndex: 'num7',
-        width: '4%',
+        width:70,
         className:'active',
+        fixed: 'right',
         render: (text, record) =>
         <span>{record.num7&&parseFloat(record.num7).toFixed(2)}</span>
       },
       {
         title: '偏差值',
         dataIndex: 'num8',
-        width: '4%',
+        width: 70,
         className:'active',
+        fixed: 'right',
       },
     ];
     this.state = {
@@ -613,6 +621,7 @@ export class EditableTable extends React.Component {
           dataSource={dataSource}
           columns={columns}
           pagination={false}
+          scroll={{ x: 1600 }}
         />
         <Button
           onClick={this.handleAdd}

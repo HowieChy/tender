@@ -23,7 +23,7 @@ const UserModel = {
           maxCount: 1,
         });
         message.error(response.message)
-        history.push('/user/login')
+        // history.push('/user/login')
       }
       yield put({
         type: 'saveCurrentUser',

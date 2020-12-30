@@ -141,7 +141,7 @@ export default (props) => {
         //编辑
         const result=await edit(parmas)
         if(result.code==-1){
-          message.error(result.message);
+          // message.error(result.message);
           return false;
         }
         if(result.code==0){
@@ -154,7 +154,7 @@ export default (props) => {
         const result=await add(parmas)
         console.log('新增',result)
         if(result.code==-1){
-          message.error(result.message);
+          //message.error(result.message);
           return false;
         }
         if(result.code==0){
@@ -171,7 +171,7 @@ export default (props) => {
         const result=await edit(parmas)
         console.log('编辑',result)
         if(result.code==-1){
-          message.error(result.message);
+          //message.error(result.message);
         }
         if(result.code==0){
           message.success(result.message)
@@ -187,7 +187,7 @@ export default (props) => {
         const result=await add(parmas)
         console.log('新增',result)
         if(result.code==-1){
-          message.error(result.message);
+          //message.error(result.message);
         }
         if(result.code==0){
           message.success(result.message)

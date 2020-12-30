@@ -174,7 +174,7 @@ export default (props) => {
       const result=await edit(parmas)
       console.log('编辑',result)
       if(result.code==-1){
-        message.error(result.message)
+        //message.error(result.message)
       }
       if(result.code==0){
         message.success(result.message)
